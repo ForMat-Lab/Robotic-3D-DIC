@@ -2,12 +2,13 @@ import pyfirmata
 import logging
 import time
 
-class Arduino:
+class ArduinoController:
     def __init__(self, port="COM3"):
         """
         Initialize the connection to the Arduino board using the specified port.
         """
         self.pins = {}
+        self.prev_states = {}
         try:
             self.board = pyfirmata.Arduino(port)
             self.it = pyfirmata.util.Iterator(self.board)
@@ -23,6 +24,7 @@ class Arduino:
         """
         if self.board:
             self.pins[pin] = self.board.get_pin(f'd:{pin}:i')  # d for digital, i for input
+            self.prev_states[pin] = None  # Initialize the previous state as None
             logging.info(f"Set up digital input on pin {pin}")
         else:
             logging.error("Board is not connected. Cannot setup pin.")
@@ -61,13 +63,13 @@ class Arduino:
 # # Example usage
 # if __name__ == "__main__":
 #     try:
-#         board = Arduino()
-#         board.setup_digital_input(9)
-#         board.setup_digital_input(10)
+#         board = ArduinoController(port="COM4")
+#         board.setup_digital_input(6)
+#         board.setup_digital_input(7)
 #         while True:
-#             state_9 = board.read_digital(9)
-#             state_10 = board.read_digital(10)
-#             print(f"Pin 9: {state_9}, Pin 10: {state_10}")
+#             state_6 = board.read_digital(6)
+#             state_7 = board.read_digital(7)
+#             print(f"Pin 6: {state_6}, Pin 7: {state_7}")
 #             time.sleep(0.1)  # Add a delay to avoid flooding the output
 #     except KeyboardInterrupt:
 #         print("KeyboardInterrupt")
