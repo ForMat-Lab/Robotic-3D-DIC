@@ -139,7 +139,7 @@ if __name__ == "__main__":
             camera.set_camera_settings()
 
             # Step 3: Set auto exposure
-            camera.set_auto_exposure()
+            camera.set_auto_exposure('Once')
 
             # # OR: Set manual exposure (e.g., 10000 µs)
             # camera.set_manual_exposure(10000)
