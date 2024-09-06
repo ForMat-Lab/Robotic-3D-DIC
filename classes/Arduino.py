@@ -51,7 +51,7 @@ class ArduinoController:
         if self.board:
             self.pins[pin] = self.board.get_pin(f'd:{pin}:i')  # d for digital, i for input
             self.prev_states[pin] = self.read_digital(pin)
-            print(f"Set up digital input on pin {pin}")
+            logging.info(f"Set up digital input on pin {pin}")
         else:
             logging.error("Board is not connected. Cannot setup pin.")
 
@@ -62,7 +62,7 @@ class ArduinoController:
         if pin in self.pins:
             return self.pins[pin].read()
         else:
-            print(f"Pin {pin} not configured. Call setup_digital_input first.")
+            logging.warning(f"Pin {pin} not configured. Call setup_digital_input first.")
             return None
 
     def check_rising_edge(self, pin):
