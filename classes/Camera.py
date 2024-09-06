@@ -1,5 +1,7 @@
 # camera.py
 
+# camera.py
+
 import cv2
 from pypylon import pylon
 import os
@@ -33,15 +35,6 @@ class Camera:
             camera.Open()
         logging.info("All cameras initialized and opened.")
 
-    def start_grabbing(self):
-        """
-        Start grabbing for all initialized cameras.
-        """
-        for camera in self.cameras:
-            if not camera.IsGrabbing():
-                camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
-        logging.info("All cameras started grabbing.")
-
     def set_camera_settings(self):
         """
         Set the width, height, and exposure time for all cameras.
@@ -51,6 +44,30 @@ class Camera:
             camera.Height.SetValue(self.height)
             camera.ExposureTime.SetValue(self.exposure_time)
         logging.info(f"Camera settings applied. Width: {self.width}, Height: {self.height}, Exposure Time: {self.exposure_time} µs.")
+
+    def set_auto_exposure(self, mode='Once'):
+        """
+        Enable auto exposure for all initialized cameras.
+        """
+        for camera in self.cameras:
+            try:
+                camera.ExposureAuto.SetValue(mode)  # Set the auto-exposure mode
+                logging.info(f"Auto-exposure {mode} enabled for camera: {camera.GetDeviceInfo().GetModelName()}")
+            except Exception as e:
+                logging.error(f"Failed to enable auto-exposure for camera {camera.GetDeviceInfo().GetModelName()}: {e}")
+
+    def set_manual_exposure(self, exposure_time):
+        """
+        Set a manual exposure time for all initialized cameras.
+        :param exposure_time: The exposure time to set (in microseconds).
+        """
+        for camera in self.cameras:
+            try:
+                camera.ExposureAuto.SetValue('Off')  # Turn off auto-exposure
+                camera.ExposureTime.SetValue(exposure_time)  # Set manual exposure time
+                logging.info(f"Manual exposure time set to {exposure_time} µs for camera: {camera.GetDeviceInfo().GetModelName()}")
+            except Exception as e:
+                logging.error(f"Failed to set manual exposure for camera {camera.GetDeviceInfo().GetModelName()}: {e}")
 
     def grab_frames(self):
         """
@@ -101,7 +118,7 @@ if __name__ == "__main__":
         """
         try:
             # Initialize the Camera class with some test values
-            camera = Camera(width=1920, height=1080, exposure_time=10000, timeout=3000, scale_factor=0.25)
+            camera = Camera(exposure_time=10000, scale_factor=0.25)
 
             # Step 1: Initialize the cameras
             camera.initialize_cameras()
@@ -109,10 +126,16 @@ if __name__ == "__main__":
             # Step 2: Set camera settings
             camera.set_camera_settings()
 
-            # Step 3: Start grabbing frames
-            camera.start_grabbing()
+            # Step 3: Set auto exposure
+            camera.set_auto_exposure()
+            time.sleep(5)  # Let the auto-exposure adjust for 5 seconds
 
-            # Step 4: Stream frames
+            # Step 4: Set manual exposure (e.g., 10000 µs)
+            camera.set_manual_exposure(10000)
+            time.sleep(5)  # Let the manual exposure run for 5 seconds
+
+            # Step 5: Start grabbing frames
+            camera.start_grabbing()
             print("Streaming frames. Press 'q' to stop.")
             while True:
                 frames = camera.grab_frames()
@@ -123,7 +146,7 @@ if __name__ == "__main__":
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
 
-            # Step 5: Close the cameras
+            # Step 6: Close the cameras
             camera.close_cameras()
 
         except Exception as e:
