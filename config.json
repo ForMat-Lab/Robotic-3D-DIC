@@ -1,0 +1,13 @@
+{
+    "experiment_name": "Sample Experiment",
+    "number_of_samples": 10,
+    "camera_settings": {
+        "width": 2448,
+        "height": 2048,
+        "exposure_time": 5000
+    },
+    "arduino": {
+        "trigger_pin": 6
+    },
+    "output_folder": "captured_images"
+}
