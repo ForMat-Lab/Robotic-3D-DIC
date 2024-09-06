@@ -43,6 +43,7 @@ def get_folder_size(folder_path):
             total_size += os.path.getsize(filepath)
     return total_size
 
+# Needs more work
 def generate_pdf_report(config, start_time, end_time, num_samples, visit_counts, output_folder):
     """
     Generate a PDF report with experiment details.
