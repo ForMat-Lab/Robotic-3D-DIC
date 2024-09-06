@@ -42,8 +42,8 @@ def initialize_cameras(config):
 
     return camera
 
-def capture_images(cameras, arduino_controller, config, stream=True):
-    """Capture images based on Arduino signals and save them to the output folder."""
+def capture_images(cameras, arduino_controller, config, stream=False):
+    """Continuously stream frames, save only when triggered by Arduino."""
     num_samples = config['number_of_samples']
     output_folder = os.path.join(config['output_folder'], datetime.now().strftime('%Y-%m-%d_%H-%M-%S'), config['experiment_name'])
     os.makedirs(output_folder, exist_ok=True)
@@ -60,25 +60,21 @@ def capture_images(cameras, arduino_controller, config, stream=True):
     capture_continues = True
 
     while capture_continues and sample_index < num_samples:
-        start_capture_time = time.time()
+        frames = cameras.grab_frames()
 
+        # Always stream frames continuously
+        if frames and stream:
+            stream_frames(frames, cameras.scale_factor)
+
+        # Save images only when triggered by the Arduino
         if arduino_controller.check_rising_edge(config['arduino_settings']['trigger_pin']):
             logger.info(f"Signal received for sample {sample_index + 1}")
-
-            frames = cameras.grab_frames()
-            if frames:
-                save_images(frames, sample_folders[sample_index], sample_index, visit_counts)
-
-                if stream:
-                    stream_frames(frames, cameras.scale_factor)  # Stream frames if flag is enabled
-
-                logger.info(f"Captured and saved images for Sample {sample_index + 1}")
+            save_images(frames, sample_folders[sample_index], sample_index, visit_counts)
+            logger.info(f"Captured and saved images for Sample {sample_index + 1}")
             sample_index += 1
 
-        elapsed_capture_time = time.time() - start_capture_time
-        time_to_wait = max(0, config['interval'] - elapsed_capture_time)
-
-        key = cv2.waitKey(int(time_to_wait * 1000)) & 0xFF
+        # Check if 'q' key is pressed to quit
+        key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             capture_continues = False
 
@@ -105,7 +101,6 @@ def stream_frames(frames, scale_factor):
     resized_frames = [cv2.resize(frame, (0, 0), fx=scale_factor, fy=scale_factor) for frame in frames]
     concatenated_frame = cv2.hconcat(resized_frames)
     cv2.imshow('Captured Images', concatenated_frame)
-    cv2.waitKey(1)  # Ensure the frame gets displayed
 
 if __name__ == "__main__":
     try:
