@@ -50,7 +50,7 @@ class ArduinoController:
         """
         if self.board:
             self.pins[pin] = self.board.get_pin(f'd:{pin}:i')  # d for digital, i for input
-            self.prev_states[pin] = None  # Initialize the previous state as None
+            self.prev_states[pin] = self.read_digital(pin)  # Initialize the previous state as None
             logging.info(f"Set up digital input on pin {pin}")
         else:
             logging.error("Board is not connected. Cannot setup pin.")
@@ -96,7 +96,7 @@ if __name__ == "__main__":
             state_6 = board.read_digital(6)
             state_7 = board.read_digital(7)
             print(f"Pin 6: {state_6}, Pin 7: {state_7}")
-            time.sleep(0.1)  # Add a delay to avoid flooding the output
+            time.sleep(1)  # Add a delay to avoid flooding the output
     except KeyboardInterrupt:
         print("KeyboardInterrupt")
     finally:
