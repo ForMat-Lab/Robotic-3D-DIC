@@ -62,6 +62,9 @@ class Camera:
             try:
                 camera.ExposureAuto.SetValue(mode)  # Set the auto-exposure mode
                 logging.info(f"Auto-exposure {mode} enabled for camera: {camera.GetDeviceInfo().GetModelName()}")
+                exposure_value = camera.ExposureTime.GetValue()
+                logging.info(f"Current exposure time: {exposure_value} µs")
+
             except Exception as e:
                 logging.error(f"Failed to enable auto-exposure for camera {camera.GetDeviceInfo().GetModelName()}: {e}")
 
@@ -137,13 +140,11 @@ if __name__ == "__main__":
 
             # Step 3: Set auto exposure
             camera.set_auto_exposure()
-            time.sleep(5)  # Let the auto-exposure adjust for 5 seconds
 
-            # Step 4: Set manual exposure (e.g., 10000 µs)
-            camera.set_manual_exposure(10000)
-            time.sleep(5)  # Let the manual exposure run for 5 seconds
+            # # OR: Set manual exposure (e.g., 10000 µs)
+            # camera.set_manual_exposure(10000)
 
-            # Step 5: Start grabbing frames
+            # Step 4: Start grabbing frames
             camera.start_grabbing()
             print("Streaming frames. Press 'q' to stop.")
             while True:
@@ -155,7 +156,7 @@ if __name__ == "__main__":
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
 
-            # Step 6: Close the cameras
+            # Step 5: Close the cameras
             camera.close_cameras()
 
         except Exception as e:
