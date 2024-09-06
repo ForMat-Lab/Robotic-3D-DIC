@@ -50,7 +50,9 @@ class ArduinoController:
         """
         if self.board:
             self.pins[pin] = self.board.get_pin(f'd:{pin}:i')  # d for digital, i for input
-            self.prev_states[pin] = self.read_digital(pin)
+            self.prev_states[pin] = None
+            while self.prev_states[pin] is None:
+                self.prev_states[pin] = self.read_digital(pin)
             logging.info(f"Set up digital input on pin {pin}")
         else:
             logging.error("Board is not connected. Cannot setup pin.")
