@@ -90,3 +90,43 @@ class Camera:
             camera.Close()
         cv2.destroyAllWindows()
         logging.info("All cameras closed.")
+
+# Unit test for the Camera class
+if __name__ == "__main__":
+    import time
+
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+    def test_camera_stream():
+        """
+        A test function to initialize the Camera class, set up the camera, and stream frames.
+        """
+        try:
+            # Initialize the Camera class with some test values
+            camera = Camera(scale_factor=0.25)
+
+            # Step 1: Initialize the cameras
+            camera.initialize_cameras()
+
+            # Step 2: Set camera settings
+            camera.set_camera_settings()
+
+            # Step 3: Start streaming frames
+            print("Streaming frames. Press 'q' to stop.")
+            while True:
+                frames = camera.grab_frames()
+                if frames:
+                    camera.display_frames(frames)
+
+                # Exit on 'q' key press
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+
+            # Step 4: Close the cameras
+            camera.close_cameras()
+
+        except Exception as e:
+            logging.error(f"An error occurred during the camera test: {e}")
+
+    # Run the test
+    test_camera_stream()
