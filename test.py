@@ -3,7 +3,7 @@ import cv2
 import logging
 from datetime import datetime
 from pypylon import pylon
-from util import load_config, generate_pdf_report, get_folder_size
+from src.util import load_config, generate_pdf_report, get_folder_size
 from src.Arduino import ArduinoController
 from src.Camera import Camera
 
