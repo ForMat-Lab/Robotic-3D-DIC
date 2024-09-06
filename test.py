@@ -4,7 +4,7 @@ import cv2
 import logging
 from datetime import datetime
 from pypylon import pylon
-from src.util import load_config, generate_pdf_report, get_folder_size
+from util import load_config, generate_pdf_report, get_folder_size
 from src.Arduino import ArduinoController
 from src.Camera import Camera
 
@@ -42,7 +42,7 @@ def initialize_cameras(config):
 
     return camera
 
-def capture_images(cameras, arduino_controller, config):
+def capture_images(cameras, arduino_controller, config, stream=False):
     """Capture images based on Arduino signals and save them to the output folder."""
     num_samples = config['number_of_samples']
     output_folder = os.path.join(config['output_folder'], datetime.now().strftime('%Y-%m-%d_%H-%M-%S'), config['experiment_name'])
@@ -68,12 +68,17 @@ def capture_images(cameras, arduino_controller, config):
             frames = cameras.grab_frames()
             if frames:
                 save_images(frames, sample_folders[sample_index], sample_index, visit_counts)
+
+                if stream:
+                    stream_frames(frames)  # Stream frames if flag is enabled
+
                 logger.info(f"Captured and saved images for Sample {sample_index + 1}")
             sample_index += 1
 
         elapsed_capture_time = time.time() - start_capture_time
+        time_to_wait = max(0, config['interval'] - elapsed_capture_time)  # Using the interval from the new config structure
 
-        key = cv2.waitKey(1) & 0xFF
+        key = cv2.waitKey(int(time_to_wait * 1000)) & 0xFF
         if key == ord('q'):
             capture_continues = False
 
@@ -95,6 +100,12 @@ def save_images(frames, sample_folder, sample_index, visit_counts):
         cv2.imwrite(os.path.join(sample_folder, filename), frame, [cv2.IMWRITE_TIFF_COMPRESSION, 1])
         logger.info(f"Saved image: {filename}")
 
+def stream_frames(frames):
+    """Display frames in a window using OpenCV."""
+    resized_frames = [cv2.resize(frame, (0, 0), fx=0.5, fy=0.5) for frame in frames]  # Adjust scale factor as needed
+    concatenated_frame = cv2.hconcat(resized_frames)
+    cv2.imshow('Captured Images', concatenated_frame)
+
 if __name__ == "__main__":
     try:
         # Load configuration
@@ -105,7 +116,9 @@ if __name__ == "__main__":
         cameras = initialize_cameras(config)
 
         # Capture images from each sample and generate PDF report
-        capture_images(cameras, arduino_controller, config)
+        # Pass `stream=True` to enable streaming of frames
+        stream = bool(int(input("Enable streaming of frames? (1 for Yes, 0 for No): ")))
+        capture_images(cameras, arduino_controller, config, stream)
 
     finally:
         # Ensure Arduino is properly closed
