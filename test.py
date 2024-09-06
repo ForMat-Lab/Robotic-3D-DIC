@@ -126,4 +126,6 @@ if __name__ == "__main__":
         # Ensure Arduino is properly closed
         if arduino_controller:
             arduino_controller.close()
+        if cameras:
+            cameras.close_cameras()
         logger.info("Experiment completed and resources released.")
