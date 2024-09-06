@@ -11,14 +11,24 @@ logger = logging.getLogger(__name__)
 
 def load_config(config_file="config.json"):
     """
-    Load configuration settings from a JSON file.
+    Load configuration settings from a JSON file with error handling for empty or invalid files.
     """
     if not os.path.exists(config_file):
         logger.error(f"Configuration file {config_file} does not exist.")
         return None
 
     with open(config_file, 'r') as f:
-        config = json.load(f)
+        try:
+            config = json.load(f)
+            if not config:
+                raise ValueError("Configuration file is empty.")
+        except json.JSONDecodeError as e:
+            logger.error(f"Error reading the configuration file: {e}")
+            return None
+        except ValueError as e:
+            logger.error(e)
+            return None
+
     logger.info(f"Configuration loaded from {config_file}.")
     return config
 
