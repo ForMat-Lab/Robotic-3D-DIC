@@ -72,7 +72,7 @@ def capture_images(cameras, arduino_controller, config, stream=False):
 
         # Always stream frames continuously
         if stream:
-            stream_frames(frames)
+            stream_frames(frames, cameras.scale_factor)
 
         # Save images only when triggered by the Arduino
         if arduino_controller.check_rising_edge(config['arduino_settings']['trigger_pin']):
