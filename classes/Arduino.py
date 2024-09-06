@@ -1,22 +1,48 @@
 import pyfirmata
+import serial.tools.list_ports
 import logging
 import time
 
 class ArduinoController:
-    def __init__(self, port="COM3"):
+    def __init__(self, port=None):
         """
         Initialize the connection to the Arduino board using the specified port.
         """
         self.pins = {}
         self.prev_states = {}
-        try:
-            self.board = pyfirmata.Arduino(port)
-            self.it = pyfirmata.util.Iterator(self.board)
-            self.it.start()
-            logging.info(f"Connected to Arduino on port {port}")
-        except Exception as e:
-            logging.error(f"Failed to connect to Arduino: {e}")
-            self.board = None
+ 
+        if port is None:
+            port = self.auto_detect_arduino_port()  # Auto-detect the port if not provided
+
+        if port:
+            try:
+                self.board = pyfirmata.Arduino(port)
+                self.it = pyfirmata.util.Iterator(self.board)
+                self.it.start()
+                logging.info(f"Connected to Arduino on port {port}")
+            except Exception as e:
+                logging.error(f"Failed to connect to Arduino: {e}")
+                self.board = None
+        else:
+            logging.error("No Arduino found. Please specify a port.")
+
+
+    def auto_detect_arduino_port(self):
+        """
+        Auto-detect the Arduino COM port by scanning available ports and trying to connect.
+        """
+        ports = list(serial.tools.list_ports.comports())
+        for port in ports:
+            try:
+                # Try to connect to each available port
+                board = pyfirmata.Arduino(port.device)
+                board.exit()  # Immediately close the connection after detection
+                logging.info(f"Arduino detected on port: {port.device}")
+                return port.device
+            except Exception:
+                continue
+        logging.error("Arduino not detected on any port.")
+        return None 
 
     def setup_digital_input(self, pin):
         """
