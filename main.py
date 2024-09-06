@@ -196,7 +196,7 @@ def generate_pdf_report(start_time, end_time, num_samples, visit_counts, experim
     logger.info(f"PDF report generated successfully: {pdf_filename}")
 
 if __name__ == "__main__":
-    arduino_controller = ArduinoController(port="COM4")
+    arduino_controller = ArduinoController()
     trigger_pin = 6  # Set to the pin you're using for the trigger
 
     try:
