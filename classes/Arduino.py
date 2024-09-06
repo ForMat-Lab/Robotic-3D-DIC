@@ -86,18 +86,18 @@ class ArduinoController:
             self.board.exit()
             logging.info("Connection to the board closed")
 
-# Example usage
-if __name__ == "__main__":
-    try:
-        board = ArduinoController()#port="COM4")
-        board.setup_digital_input(6)
-        board.setup_digital_input(7)
-        while True:
-            state_6 = board.read_digital(6)
-            state_7 = board.read_digital(7)
-            print(f"Pin 6: {state_6}, Pin 7: {state_7}")
-            time.sleep(1)  # Add a delay to avoid flooding the output
-    except KeyboardInterrupt:
-        print("KeyboardInterrupt")
-    finally:
-        board.close()
+# # Example usage
+# if __name__ == "__main__":
+#     try:
+#         board = ArduinoController()#port="COM4")
+#         board.setup_digital_input(6)
+#         board.setup_digital_input(7)
+#         while True:
+#             state_6 = board.read_digital(6)
+#             state_7 = board.read_digital(7)
+#             print(f"Pin 6: {state_6}, Pin 7: {state_7}")
+#             time.sleep(1)  # Add a delay to avoid flooding the output
+#     except KeyboardInterrupt:
+#         print("KeyboardInterrupt")
+#     finally:
+#         board.close()
