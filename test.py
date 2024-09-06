@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def initialize_arduino(config):
     """Initialize Arduino based on the configuration."""
     arduino_controller = ArduinoController()
-    trigger_pin = config['arduino']['trigger_pin']
+    trigger_pin = config['arduino_settings']['trigger_pin']  # Updated to match new config key
     arduino_controller.setup_digital_input(trigger_pin)
     logger.info("Arduino initialized with trigger pin: %d", trigger_pin)
     return arduino_controller
@@ -30,6 +30,7 @@ def initialize_cameras(config):
     )
     camera.initialize_cameras()
 
+    # Set camera exposure mode (manual or auto) based on the configuration
     if config['camera_settings'].get('auto_exposure', False):
         camera.set_auto_exposure(config['camera_settings'].get('auto_exposure_mode', 'Once'))
     else:
@@ -61,7 +62,7 @@ def capture_images(cameras, arduino_controller, config):
     while capture_continues and sample_index < num_samples:
         start_capture_time = time.time()
 
-        if arduino_controller.check_rising_edge(config['arduino']['trigger_pin']):
+        if arduino_controller.check_rising_edge(config['arduino_settings']['trigger_pin']):  # Updated to match new config key
             logger.info(f"Signal received for sample {sample_index + 1}")
 
             frames = cameras.grab_frames()
@@ -71,9 +72,8 @@ def capture_images(cameras, arduino_controller, config):
             sample_index += 1
 
         elapsed_capture_time = time.time() - start_capture_time
-        time_to_wait = max(0, config['interval'] - elapsed_capture_time)
 
-        key = cv2.waitKey(int(time_to_wait * 1000)) & 0xFF
+        key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             capture_continues = False
 
