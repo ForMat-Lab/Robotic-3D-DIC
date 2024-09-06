@@ -7,7 +7,7 @@
         "width": 2448,
         "height": 2048,
         "exposure_time": 5000,
-        "auto_exposure": false,
+        "auto_exposure": true,
         "auto_exposure_mode": "Once",
         "scale_factor": 0.5
     },
