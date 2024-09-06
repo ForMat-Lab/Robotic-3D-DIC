@@ -35,6 +35,15 @@ class Camera:
             camera.Open()
         logging.info("All cameras initialized and opened.")
 
+    def start_grabbing(self):
+        """
+        Start grabbing for all initialized cameras.
+        """
+        for camera in self.cameras:
+            if not camera.IsGrabbing():
+                camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
+        logging.info("All cameras started grabbing.")
+
     def set_camera_settings(self):
         """
         Set the width, height, and exposure time for all cameras.
