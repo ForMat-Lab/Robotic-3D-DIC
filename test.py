@@ -56,14 +56,22 @@ def capture_images(cameras, arduino_controller, config, stream=False):
     for folder in sample_folders:
         os.makedirs(folder, exist_ok=True)
 
+    # Ensure cameras start grabbing frames
+    cameras.start_grabbing()
+
     sample_index = 0
     capture_continues = True
 
     while capture_continues and sample_index < num_samples:
         frames = cameras.grab_frames()
 
+        # Handle frame grabbing failure
+        if not frames:
+            logger.error("Error: Camera is not grabbing frames.")
+            continue
+
         # Always stream frames continuously
-        if frames and stream:
+        if stream:
             stream_frames(frames, cameras.scale_factor)
 
         # Save images only when triggered by the Arduino
