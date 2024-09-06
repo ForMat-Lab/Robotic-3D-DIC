@@ -6,10 +6,10 @@
     "camera_settings": {
         "width": 2448,
         "height": 2048,
-        "exposure_time": 5000,
+        "exposure_time": 100000,
         "auto_exposure": true,
         "auto_exposure_mode": "Once",
-        "scale_factor": 0.5
+        "scale_factor": 0.25
     },
     "arduino_settings": {
         "trigger_pin": 6
