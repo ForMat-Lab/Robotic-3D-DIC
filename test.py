@@ -104,7 +104,7 @@ def save_images(frames, sample_folder, sample_index, visit_counts):
         cv2.imwrite(os.path.join(sample_folder, filename), frame, [cv2.IMWRITE_TIFF_COMPRESSION, 1])
         logger.info(f"Saved image: {filename}")
 
-def stream_frames(frames, scale_factor):
+def stream_frames(frames, scale_factor=0.25):
     """Display frames in a window using OpenCV."""
     resized_frames = [cv2.resize(frame, (0, 0), fx=scale_factor, fy=scale_factor) for frame in frames]
     concatenated_frame = cv2.hconcat(resized_frames)
