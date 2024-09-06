@@ -4,7 +4,7 @@ import cv2
 import logging
 from datetime import datetime
 from pypylon import pylon
-from util import load_config, generate_pdf_report, get_folder_size
+from src.util import load_config, generate_pdf_report, get_folder_size
 from src.Arduino import ArduinoController
 from src.Camera import Camera
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def initialize_arduino(config):
     """Initialize Arduino based on the configuration."""
     arduino_controller = ArduinoController()
-    trigger_pin = config['arduino_settings']['trigger_pin']  # Updated to match new config key
+    trigger_pin = config['arduino_settings']['trigger_pin']
     arduino_controller.setup_digital_input(trigger_pin)
     logger.info("Arduino initialized with trigger pin: %d", trigger_pin)
     return arduino_controller
@@ -42,7 +42,7 @@ def initialize_cameras(config):
 
     return camera
 
-def capture_images(cameras, arduino_controller, config, stream=False):
+def capture_images(cameras, arduino_controller, config, stream=True):
     """Capture images based on Arduino signals and save them to the output folder."""
     num_samples = config['number_of_samples']
     output_folder = os.path.join(config['output_folder'], datetime.now().strftime('%Y-%m-%d_%H-%M-%S'), config['experiment_name'])
@@ -62,7 +62,7 @@ def capture_images(cameras, arduino_controller, config, stream=False):
     while capture_continues and sample_index < num_samples:
         start_capture_time = time.time()
 
-        if arduino_controller.check_rising_edge(config['arduino_settings']['trigger_pin']):  # Updated to match new config key
+        if arduino_controller.check_rising_edge(config['arduino_settings']['trigger_pin']):
             logger.info(f"Signal received for sample {sample_index + 1}")
 
             frames = cameras.grab_frames()
@@ -70,13 +70,13 @@ def capture_images(cameras, arduino_controller, config, stream=False):
                 save_images(frames, sample_folders[sample_index], sample_index, visit_counts)
 
                 if stream:
-                    stream_frames(frames)  # Stream frames if flag is enabled
+                    stream_frames(frames, cameras.scale_factor)  # Stream frames if flag is enabled
 
                 logger.info(f"Captured and saved images for Sample {sample_index + 1}")
             sample_index += 1
 
         elapsed_capture_time = time.time() - start_capture_time
-        time_to_wait = max(0, config['interval'] - elapsed_capture_time)  # Using the interval from the new config structure
+        time_to_wait = max(0, config['interval'] - elapsed_capture_time)
 
         key = cv2.waitKey(int(time_to_wait * 1000)) & 0xFF
         if key == ord('q'):
@@ -100,11 +100,12 @@ def save_images(frames, sample_folder, sample_index, visit_counts):
         cv2.imwrite(os.path.join(sample_folder, filename), frame, [cv2.IMWRITE_TIFF_COMPRESSION, 1])
         logger.info(f"Saved image: {filename}")
 
-def stream_frames(frames):
+def stream_frames(frames, scale_factor):
     """Display frames in a window using OpenCV."""
-    resized_frames = [cv2.resize(frame, (0, 0), fx=0.5, fy=0.5) for frame in frames]  # Adjust scale factor as needed
+    resized_frames = [cv2.resize(frame, (0, 0), fx=scale_factor, fy=scale_factor) for frame in frames]
     concatenated_frame = cv2.hconcat(resized_frames)
     cv2.imshow('Captured Images', concatenated_frame)
+    cv2.waitKey(1)  # Ensure the frame gets displayed
 
 if __name__ == "__main__":
     try:
@@ -116,9 +117,7 @@ if __name__ == "__main__":
         cameras = initialize_cameras(config)
 
         # Capture images from each sample and generate PDF report
-        # Pass `stream=True` to enable streaming of frames
-        stream = bool(int(input("Enable streaming of frames? (1 for Yes, 0 for No): ")))
-        capture_images(cameras, arduino_controller, config, stream)
+        capture_images(cameras, arduino_controller, config, stream=True)
 
     finally:
         # Ensure Arduino is properly closed
