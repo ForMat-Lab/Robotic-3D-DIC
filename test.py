@@ -1,9 +1,10 @@
 import os
+import time
 import cv2
 import logging
 from datetime import datetime
 from pypylon import pylon
-from src.util import load_config, generate_pdf_report, get_folder_size
+from util import load_config, generate_pdf_report, get_folder_size
 from src.Arduino import ArduinoController
 from src.Camera import Camera
 
@@ -11,90 +12,88 @@ from src.Camera import Camera
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def initialize_components(config):
-    """Initialize Arduino and Cameras."""
-    # Initialize Arduino
+def initialize_arduino(config):
+    """Initialize Arduino based on the configuration."""
     arduino_controller = ArduinoController()
+    trigger_pin = config['arduino']['trigger_pin']
+    arduino_controller.setup_digital_input(trigger_pin)
+    logger.info("Arduino initialized with trigger pin: %d", trigger_pin)
+    return arduino_controller
 
-    # Initialize cameras
+def initialize_cameras(config):
+    """Initialize and configure cameras based on the configuration."""
     camera = Camera(
         width=config['camera_settings']['width'],
         height=config['camera_settings']['height'],
-        exposure_time=config['camera_settings']['exposure_time']
+        exposure_time=config['camera_settings']['exposure_time'],
+        scale_factor=config['camera_settings'].get('scale_factor', 0.5)
     )
     camera.initialize_cameras()
 
-    logger.info(f"{len(camera.cameras)} cameras initialized.")
-    return arduino_controller, camera
+    if config['camera_settings'].get('auto_exposure', False):
+        camera.set_auto_exposure(config['camera_settings'].get('auto_exposure_mode', 'Once'))
+    else:
+        camera.set_camera_settings()
 
-def capture_images(arduino_controller, camera, config):
-    """Capture images and generate PDF report."""
+    logger.info(f"Cameras initialized and configured with width: {config['camera_settings']['width']}, "
+                f"height: {config['camera_settings']['height']}, exposure mode: "
+                f"{'Auto' if config['camera_settings'].get('auto_exposure', False) else 'Manual'}")
+
+    return camera
+
+def capture_images(cameras, arduino_controller, config):
+    """Capture images based on Arduino signals and save them to the output folder."""
     num_samples = config['number_of_samples']
     output_folder = os.path.join(config['output_folder'], datetime.now().strftime('%Y-%m-%d_%H-%M-%S'), config['experiment_name'])
     os.makedirs(output_folder, exist_ok=True)
 
-    trigger_pin = config['arduino']['trigger_pin']
-
-    # Record start time
-    start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    visit_counts = [0] * num_samples
+    start_time = time.strftime('%Y-%m-%d_%H-%M-%S')
     logger.info(f"Experiment started at {start_time}")
 
-    # Setup digital input pin for Arduino
-    arduino_controller.setup_digital_input(trigger_pin)
+    sample_folders = [os.path.join(output_folder, f'Sample_{i}') for i in range(1, num_samples + 1)]
+    for folder in sample_folders:
+        os.makedirs(folder, exist_ok=True)
 
     sample_index = 0
-    visit_counts = [0] * num_samples
     capture_continues = True
 
-    while capture_continues:
-        # Wait for a capture signal from Arduino
-        if arduino_controller.check_rising_edge(trigger_pin):
-            logger.info(f"Capture signal received for Sample {sample_index + 1}")
+    while capture_continues and sample_index < num_samples:
+        start_capture_time = time.time()
 
-            # Capture images from all cameras
-            frames = camera.grab_frames()
+        if arduino_controller.check_rising_edge(config['arduino']['trigger_pin']):
+            logger.info(f"Signal received for sample {sample_index + 1}")
+
+            frames = cameras.grab_frames()
             if frames:
-                # Increment the visit count for the current sample
-                visit_counts[sample_index] += 1
+                save_images(frames, sample_folders[sample_index], sample_index, visit_counts)
+                logger.info(f"Captured and saved images for Sample {sample_index + 1}")
+            sample_index += 1
 
-                # Resize and display frames
-                camera.display_frames(frames)
+        elapsed_capture_time = time.time() - start_capture_time
+        time_to_wait = max(0, config['interval'] - elapsed_capture_time)
 
-                # Save images
-                sample_folder = os.path.join(output_folder, f'Sample_{sample_index + 1}')
-                os.makedirs(sample_folder, exist_ok=True)
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                for j, frame in enumerate(frames):
-                    filename = f'sample_{sample_index + 1}_{timestamp}_{j}.tif'
-                    cv2.imwrite(os.path.join(sample_folder, filename), frame, [cv2.IMWRITE_TIFF_COMPRESSION, 1])
-                    logger.info(f"Image captured for Sample {sample_index + 1}. Filename: {filename}")
-
-            # Move to the next sample after capturing images
-            sample_index = (sample_index + 1) % num_samples
-
-        key = cv2.waitKey(1) & 0xFF
+        key = cv2.waitKey(int(time_to_wait * 1000)) & 0xFF
         if key == ord('q'):
             capture_continues = False
 
-    # Stop grabbing and close all cameras
-    camera.close_cameras()
+    cameras.close_cameras()
+    end_time = time.strftime('%Y-%m-%d_%H-%M-%S')
 
-    # Record end time
-    end_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    logger.info(f"Experiment ended at {end_time}")
+    total_filesize = get_folder_size(output_folder)
+    generate_pdf_report(config, start_time, end_time, num_samples, visit_counts, output_folder)
+    logger.info(f"Experiment ended at {end_time}, total size: {total_filesize / (1024 * 1024):.2f} MB")
 
-    # Calculate the total size of the output folder
-    total_filesize_str = f"{get_folder_size(output_folder) / (1024 * 1024):.2f} MB"
+def save_images(frames, sample_folder, sample_index, visit_counts):
+    """Save the captured frames to the sample folder."""
+    visit_counts[sample_index] += 1
+    timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
+    visit_count_str = f'{visit_counts[sample_index]:04}'
 
-    # Generate PDF report
-    generate_pdf_report(
-        config=config,
-        start_time=start_time,
-        end_time=end_time,
-        num_samples=num_samples,
-        visit_counts=visit_counts,
-        output_folder=output_folder
-    )
+    for idx, frame in enumerate(frames):
+        filename = f'sample_{sample_index + 1}_{timestamp}_{visit_count_str}_{idx}.tif'
+        cv2.imwrite(os.path.join(sample_folder, filename), frame, [cv2.IMWRITE_TIFF_COMPRESSION, 1])
+        logger.info(f"Saved image: {filename}")
 
 if __name__ == "__main__":
     try:
@@ -102,11 +101,14 @@ if __name__ == "__main__":
         config = load_config()
 
         # Initialize Arduino and Cameras
-        arduino_controller, camera = initialize_components(config)
+        arduino_controller = initialize_arduino(config)
+        cameras = initialize_cameras(config)
 
-        # Capture images and generate report
-        capture_images(arduino_controller, camera, config)
+        # Capture images from each sample and generate PDF report
+        capture_images(cameras, arduino_controller, config)
 
     finally:
-        # Ensure that the Arduino connection is always closed
-        arduino_controller.close()
+        # Ensure Arduino is properly closed
+        if arduino_controller:
+            arduino_controller.close()
+        logger.info("Experiment completed and resources released.")
