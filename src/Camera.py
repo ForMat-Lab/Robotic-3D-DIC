@@ -1,7 +1,3 @@
-# camera.py
-
-# camera.py
-
 import cv2
 from pypylon import pylon
 import os
