@@ -88,18 +88,47 @@ class ArduinoController:
             self.board.exit()
             logging.info("Connection to the board closed")
 
-# # Example usage
-# if __name__ == "__main__":
-#     try:
-#         board = ArduinoController()#port="COM4")
-#         board.setup_digital_input(6)
-#         board.setup_digital_input(7)
-#         while True:
-#             state_6 = board.read_digital(6)
-#             state_7 = board.read_digital(7)
-#             print(f"Pin 6: {state_6}, Pin 7: {state_7}")
-#             time.sleep(1)  # Add a delay to avoid flooding the output
-#     except KeyboardInterrupt:
-#         print("KeyboardInterrupt")
-#     finally:
-#         board.close()
+# Unit test for the ArduinoController class
+if __name__ == "__main__":
+    import logging
+    import time
+
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+    def test_arduino_controller():
+        """
+        A test function to initialize the ArduinoController, set up digital input pins,
+        and read their states.
+        """
+        try:
+            # Step 1: Initialize the ArduinoController (with auto-detect port)
+            arduino = ArduinoController()
+            if arduino.board is None:
+                logging.error("Failed to initialize Arduino. Exiting test.")
+                return
+
+            # Step 2: Set up digital input pins (using pin 6 as an example)
+            arduino.setup_digital_input(6)
+            logging.info("Digital input set up on pin 6.")
+
+            # Step 3: Start reading the digital pin state
+            print("Reading digital pin states. Press 'Ctrl + C' to stop.")
+            while True:
+                state_6 = arduino.read_digital(6)
+                logging.info(f"Pin 6 state: {state_6}")
+                time.sleep(1)  # Add a delay to avoid flooding the output
+
+        except KeyboardInterrupt:
+            logging.info("Test interrupted by user.")
+
+        except Exception as e:
+            logging.error(f"An error occurred during the Arduino test: {e}")
+
+        finally:
+            # Step 4: Close the Arduino connection
+            if arduino.board:
+                arduino.close()
+                logging.info("Arduino connection closed.")
+
+    # Run the test
+    test_arduino_controller()
