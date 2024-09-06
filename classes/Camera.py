@@ -2,12 +2,14 @@
 
 import cv2
 from pypylon import pylon
+import os
 import logging
+from datetime import datetime
 
 class Camera:
-    def __init__(self, width=2448, height=2048, exposure_time=100000, timeout=5000, scale_factor=0.5):
+    def __init__(self, width=2448, height=2048, exposure_time=5000, timeout=5000, scale_factor=0.5):
         """
-        Initialize the camera controller.
+        Initialize the camera controller with configurable parameters.
         :param width: The width resolution of the camera frames.
         :param height: The height resolution of the camera frames.
         :param exposure_time: The exposure time for capturing images (in microseconds).
@@ -31,6 +33,15 @@ class Camera:
             camera.Open()
         logging.info("All cameras initialized and opened.")
 
+    def start_grabbing(self):
+        """
+        Start grabbing for all initialized cameras.
+        """
+        for camera in self.cameras:
+            if not camera.IsGrabbing():
+                camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
+        logging.info("All cameras started grabbing.")
+
     def set_camera_settings(self):
         """
         Set the width, height, and exposure time for all cameras.
@@ -46,39 +57,26 @@ class Camera:
         Grab frames from all the initialized cameras.
         :return: List of frames.
         """
-        results = [camera.RetrieveResult(self.timeout, pylon.TimeoutHandling_ThrowException) for camera in self.cameras]
-        frames = [result.Array for result in results if result.GrabSucceeded()]
-
-        # Release all results after grabbing frames
-        for result in results:
-            result.Release()
-
+        frames = []
+        for camera in self.cameras:
+            if camera.IsGrabbing():
+                grab_result = camera.RetrieveResult(self.timeout, pylon.TimeoutHandling_ThrowException)
+                if grab_result.GrabSucceeded():
+                    frames.append(grab_result.Array)
+                grab_result.Release()
+            else:
+                logging.error("Camera is not grabbing frames.")
         return frames
-
-    def save_frames(self, frames, sample_folder, sample_index, visit_count):
-        """
-        Save captured frames to the specified folder.
-        :param frames: The list of frames captured from cameras.
-        :param sample_folder: The folder where the frames will be saved.
-        :param sample_index: The current sample index.
-        :param visit_count: The visit count for the sample.
-        """
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        for idx, frame in enumerate(frames):
-            visit_count_str = f'{visit_count:04}'
-            filename = f'sample_{sample_index + 1}_{timestamp}_{visit_count_str}_{idx}.tif'
-            filepath = os.path.join(sample_folder, filename)
-            cv2.imwrite(filepath, frame, [cv2.IMWRITE_TIFF_COMPRESSION, 1])
-            logging.info(f"Image saved: {filename}")
 
     def display_frames(self, frames):
         """
         Display frames concatenated in a single CV2 window.
         :param frames: The list of frames to display.
         """
-        resized_frames = [cv2.resize(frame, (0, 0), fx=self.scale_factor, fy=self.scale_factor) for frame in frames]
-        concatenated_frame = cv2.hconcat(resized_frames)
-        cv2.imshow('Captured Images', concatenated_frame)
+        if frames:
+            resized_frames = [cv2.resize(frame, (0, 0), fx=self.scale_factor, fy=self.scale_factor) for frame in frames]
+            concatenated_frame = cv2.hconcat(resized_frames)
+            cv2.imshow('Captured Images', concatenated_frame)
 
     def close_cameras(self):
         """
@@ -103,7 +101,7 @@ if __name__ == "__main__":
         """
         try:
             # Initialize the Camera class with some test values
-            camera = Camera(scale_factor=0.25)
+            camera = Camera(width=1920, height=1080, exposure_time=10000, timeout=3000, scale_factor=0.25)
 
             # Step 1: Initialize the cameras
             camera.initialize_cameras()
@@ -111,7 +109,10 @@ if __name__ == "__main__":
             # Step 2: Set camera settings
             camera.set_camera_settings()
 
-            # Step 3: Start streaming frames
+            # Step 3: Start grabbing frames
+            camera.start_grabbing()
+
+            # Step 4: Stream frames
             print("Streaming frames. Press 'q' to stop.")
             while True:
                 frames = camera.grab_frames()
@@ -122,7 +123,7 @@ if __name__ == "__main__":
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
 
-            # Step 4: Close the cameras
+            # Step 5: Close the cameras
             camera.close_cameras()
 
         except Exception as e:
