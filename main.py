@@ -5,7 +5,7 @@ import time
 import cv2
 import numpy as np
 import logging
-from datetime import datetime, timedelta  # Added timedelta import
+from datetime import datetime, timedelta
 from src.util import load_config, generate_pdf_report, get_folder_size
 from src.Arduino import ArduinoController
 from src.Camera import Camera
@@ -29,6 +29,7 @@ class Experiment:
         self.output_base_folder = self.setup_output_folder()
         self.visit_counts = [0] * self.config['number_of_samples']
         self.start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        self.run_count = 0
 
         # Pin configurations
         arduino_input_pins = config['arduino_settings']['input_pins']
@@ -53,7 +54,7 @@ class Experiment:
 8e 8  8 8    8 8  8 8  88 8eee8e 8  88 8   8  8  88    8  8e   8      8e   8 8e 8e     
 88 8  8 8eeee8 8e   8   8 88   8 8   8 8eee8e 8   8 eee8  88   8 eeee 88   8 88 88     
 88 8  8   88   88   8   8 88   8 8   8 88   8 8   8    88 88   8      88   8 88 88   e 
-88 8  8   88   88e8 8eee8 88   8 8eee8 88eee8 8eee8 eee88 88eee8      88eee8 88 88eee8                                                                                                                                               
+88 8  8   88   88e8 8eee8 88   8 8eee8 88eee8 8eee8 eee88 88eee8      88eee8 88 88eee8                                                                               
 
     MycoRobo3d-DIC: Automated Imaging Acquisition System
 
@@ -63,7 +64,7 @@ class Experiment:
     Year: 2024
     Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
 '''
-    
+
     def initialize_arduino(self):
         """Initialize Arduino based on the configuration."""
         arduino_controller = ArduinoController()
@@ -139,13 +140,11 @@ class Experiment:
                 self.cleanup()
                 return
         try:
-            run_number = 0
-            while self.total_runs == -1 or run_number < self.total_runs:
-                self.run_count = run_number
+            while self.total_runs == -1 or self.run_count < self.total_runs:
                 logger.info(f"Starting run {self.run_count}")
                 self.execute_run()
-                run_number += 1
-                if self.total_runs != -1 and run_number >= self.total_runs:
+                self.run_count += 1  # Increment actual run count
+                if self.total_runs != -1 and self.run_count >= self.total_runs:
                     break
                 self.enter_break()
             self.terminate_experiment()
@@ -186,7 +185,7 @@ class Experiment:
 
         # Reset DI_START to LOW to prepare for next run
         self.arduino.set_digital(self.DI_START_pin, False)
-        logger.info(f"Run {self.run_count} execution completed, with {sample_index+1} captures.")
+        logger.info(f"Run {self.run_count} execution completed, with {sample_index} captures.")
 
     def handle_capture_signal(self, sample_index):
         """Handle the capture signal from the robot."""
@@ -236,7 +235,7 @@ class Experiment:
     def save_images(self, frames, sample_index):
         """Save the captured frames to the sample folder."""
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        visit_count_str = f'{self.visit_counts[sample_index]:04}'  # Then format it
+        visit_count_str = f'{self.visit_counts[sample_index]:04}'
 
         sample_folder = self.sample_folders[sample_index]
         filenames = []
@@ -248,8 +247,8 @@ class Experiment:
             filenames.append(filepath)
             logger.info(f"Run {self.run_count}, Sample {sample_index}: Saved image {filename}")
 
-        self.visit_counts[sample_index] += 1  # Increment visit count first
-        
+        self.visit_counts[sample_index] += 1  # Increment visit count
+
         # Display images
         self.display_images(frames)
 
@@ -266,7 +265,7 @@ class Experiment:
     def enter_break(self):
         """Enter a break period between runs."""
         logger.info(f"Entering break period of {self.interval_minutes} minutes.")
-        logger.info(f"Closing cameras and cleaning-up signals.")
+        logger.info(f"Closing cameras and cleaning up signals.")
         self.cameras.close_cameras()
         self.arduino.set_digital(self.DI_START_pin, False)  # Ensure DI_START is LOW
 
@@ -312,10 +311,12 @@ class Experiment:
         """Terminate the experiment and generate the report."""
         end_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         total_filesize = get_folder_size(self.output_base_folder)
-        total_samples = sum(self.visit_counts)
+        total_samples_collected = sum(self.visit_counts)
+        total_duration = datetime.strptime(end_time, '%Y-%m-%d_%H-%M-%S') - datetime.strptime(self.start_time, '%Y-%m-%d_%H-%M-%S')
         generate_pdf_report(
             self.config, self.start_time, end_time,
-            total_samples, self.visit_counts, self.output_base_folder
+            self.run_count, total_duration, total_samples_collected,
+            self.visit_counts, self.output_base_folder
         )
         logger.info(
             f"Experiment completed. Total size: "
