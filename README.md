@@ -2,7 +2,7 @@
 
 ## Overview
 
-**MycoRobo3D-DIC** is an automated imaging acquisition system designed for high-throughput and precise imaging experiments. It integrates robotic automation with imaging hardware to capture images at predefined sample positions. The system facilitates synchronized movements and image captures between an ABB robot, Basler cameras, and an Arduino microcontroller.
+**MycoRobo3D-DIC** is an automated imaging acquisition system designed for high-throughput studies. It integrates robotic automation with imaging hardware to capture images at predefined sample positions. The system facilitates synchronized movements and image captures between an ABB robot, Basler cameras, and an Arduino microcontroller.
 
 ---
 
@@ -21,16 +21,6 @@
   - [Running the Experiment](#running-the-experiment)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
-
----
-
-## Features
-
-- **Automated Image Acquisition**: Capture images at predefined positions with precise timing.
-- **Robotic Integration**: Seamless communication between the robot and imaging system.
-- **User-Friendly Interface**: Clear logging and reporting for ease of use.
-- **Configurable Settings**: Easily adjust experiment parameters via a JSON configuration file.
-- **Report Generation**: Automatic PDF report summarizing the experiment.
 
 ---
 
@@ -178,7 +168,6 @@ Before running the experiment, configure the `config.json` file according to you
 - **Maintainers**: Özgüç B. Çapunaman, Alale Mohseni
 - **Institution**: ForMatLab @ Penn State University
 - **Year**: 2024
-- **GitHub Repository**: [MycoRobo3D-DIC](https://github.com/ForMat-Lab/MycoRobo3D-DIC)
 
 ---
 
