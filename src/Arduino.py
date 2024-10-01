@@ -8,9 +8,10 @@ class ArduinoController:
         """
         Initialize the connection to the Arduino board using the specified port.
         """
-        self.pins = {}
+        self.input_pins = {}
+        self.output_pins = {}
         self.prev_states = {}
- 
+
         if port is None:
             port = self.auto_detect_arduino_port()  # Auto-detect the port if not provided
 
@@ -25,7 +26,6 @@ class ArduinoController:
                 self.board = None
         else:
             logging.error("No Arduino found. Please specify a port.")
-
 
     def auto_detect_arduino_port(self):
         """
@@ -42,42 +42,85 @@ class ArduinoController:
             except Exception:
                 continue
         logging.error("Arduino not detected on any port.")
-        return None 
+        return None
 
-    def setup_digital_input(self, pin):
+    def setup_digital_output(self, pin: int):
+        """
+        Setup a digital pin for output.
+        """
+        if self.board:
+            self.output_pins[pin] = self.board.get_pin(f'd:{pin}:o')  # d for digital, o for output
+            self.set_digital(pin, False)
+            logging.info(f"Set up digital output on pin {pin}")
+        else:
+            logging.error("Board is not connected. Cannot setup pin.")
+
+    def set_digital(self, pin: int, val: bool):
+        """
+        Set the state of a configured digital pin.
+        """
+        if pin in self.output_pins:
+            self.output_pins[pin].write(val)
+        else:
+            logging.warning(f"Pin {pin} not configured. Call setup_digital_output first.")
+
+    def setup_digital_input(self, pin: int):
         """
         Setup a digital pin for input.
         """
         if self.board:
-            self.pins[pin] = self.board.get_pin(f'd:{pin}:i')  # d for digital, i for input
-            self.prev_states[pin] = None
-            while self.prev_states[pin] is None:
-                self.prev_states[pin] = self.read_digital(pin)
-            logging.info(f"Set up digital input on pin {pin}")
+            self.input_pins[pin] = self.board.get_pin(f'd:{pin}:i')  # d for digital, i for input
+            self.input_pins[pin].enable_reporting()
+            # Initialize previous state
+            initial_state = self.read_digital(pin)
+            self.prev_states[pin] = initial_state if initial_state is not None else False
+            logging.info(f"Set up digital input on pin {pin} with initial state {self.prev_states[pin]}")
         else:
             logging.error("Board is not connected. Cannot setup pin.")
 
-    def read_digital(self, pin):
+    def read_digital(self, pin: int):
         """
-        Read the state of a configured digital pin. Returns True if the pin is HIGH, False if LOW.
+        Read the state of a configured digital pin.
         """
-        if pin in self.pins:
-            return self.pins[pin].read()
+        if pin in self.input_pins:
+            state = self.input_pins[pin].read()
+            if state is None:
+                return False  # Default to False if state is None
+            return bool(state)
         else:
             logging.warning(f"Pin {pin} not configured. Call setup_digital_input first.")
-            return None
+            return False
 
-    def check_rising_edge(self, pin):
+    def check_rising_edge(self, pin: int):
         """
         Check for a rising edge (LOW to HIGH transition) on the specified pin.
         Returns True if a rising edge is detected, otherwise False.
         """
-        if pin in self.pins:
+        if pin in self.input_pins:
             current_state = self.read_digital(pin)
-            if current_state is True and self.prev_states[pin] is False:
-                self.prev_states[pin] = current_state
-                return True
+            prev_state = self.prev_states.get(pin, current_state)
             self.prev_states[pin] = current_state
+            if prev_state == False and current_state == True:
+                logging.debug(f"Rising edge detected on pin {pin}")
+                return True
+        else:
+            logging.warning(f"Pin {pin} not configured. Call setup_digital_input first.")
+        return False
+
+    def check_falling_edge(self, pin: int):
+        """
+        Check for a falling edge (HIGH to LOW transition) on the specified pin.
+        Returns True if a falling edge is detected, otherwise False.
+        """
+        if pin in self.input_pins:
+            current_state = self.read_digital(pin)
+            prev_state = self.prev_states.get(pin, current_state)
+            self.prev_states[pin] = current_state
+            if prev_state == True and current_state == False:
+                logging.debug(f"Falling edge detected on pin {pin}")
+                return True
+        else:
+            logging.warning(f"Pin {pin} not configured. Call setup_digital_input first.")
         return False
 
     def close(self):
@@ -86,7 +129,7 @@ class ArduinoController:
         """
         if self.board:
             self.board.exit()
-            logging.info("Connection to the board closed")
+            logging.info("Connection to the Arduino board closed")
 
 # Unit test for the ArduinoController class
 if __name__ == "__main__":
