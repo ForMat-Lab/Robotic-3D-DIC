@@ -51,7 +51,7 @@ class ArduinoController:
         if self.board:
             self.output_pins[pin] = self.board.get_pin(f'd:{pin}:o')  # d for digital, o for output
             self.set_digital(pin, False)
-            logging.info(f"Set up digital output on pin {pin}")
+            logging.info(f"Set up digital output on pin {pin} with initial state {self.prev_states[pin]}")
         else:
             logging.error("Board is not connected. Cannot setup pin.")
 
@@ -74,7 +74,7 @@ class ArduinoController:
             # Initialize previous state
             initial_state = self.read_digital(pin)
             self.prev_states[pin] = initial_state if initial_state is not None else False
-            logging.info(f"Set up digital input on pin {pin} with initial state {self.prev_states[pin]}")
+            logging.info(f"Set up digital input on pin {pin}.")
         else:
             logging.error("Board is not connected. Cannot setup pin.")
 
