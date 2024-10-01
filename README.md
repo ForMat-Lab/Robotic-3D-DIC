@@ -43,7 +43,7 @@
 
 Download and install the Basler Pylon Software from the official website:
 
-- **[Basler Pylon Software Download](https://www.baslerweb.com/en/products/software/basler-pylon-camera-software-suite/)**
+- **[Basler Pylon Software Download](https://www2.baslerweb.com/en/downloads/software-downloads)**
 
 **Installation Steps**:
 
