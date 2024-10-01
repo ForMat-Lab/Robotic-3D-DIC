@@ -1,5 +1,3 @@
-# src/Camera.py
-
 import cv2
 from pypylon import pylon
 import logging
