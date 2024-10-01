@@ -13,6 +13,7 @@
     },
     "arduino_settings": {
         "port": "COM3",
+        "auto_detect_port": false,
         "input_pins": {
             "DO_CAPTURE": 6,
             "DO_RUN_COMPLETE": 7
