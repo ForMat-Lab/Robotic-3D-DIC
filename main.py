@@ -24,12 +24,6 @@ class Experiment:
         self.exposure_time = config['camera_settings']['exposure_time']
         self.auto_exposure = config['camera_settings'].get('auto_exposure', False)
         self.exposure_set = False  # Flag to indicate if exposure has been set after auto-exposure
-        self.arduino = self.initialize_arduino()
-        self.cameras = self.initialize_cameras()
-        self.output_base_folder = self.setup_output_folder()
-        self.visit_counts = [0] * self.config['number_of_samples']
-        self.start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        self.run_count = 0
 
         # Pin configurations
         arduino_input_pins = config['arduino_settings']['input_pins']
@@ -42,10 +36,19 @@ class Experiment:
         # Experiment parameters
         self.num_samples = config['number_of_samples']
         self.interval_minutes = config.get('interval_minutes', 30)
-        self.total_runs = config.get('total_runs', 3)  # -1 for infinite runs
-        self.scale_factor = config['camera_settings'].get('scale_factor', 0.5)
+        self.total_runs = config.get('total_runs', -1)  # -1 for infinite runs
+        self.scale_factor = config.get('scale_factor', 0.5)
+        self.visit_counts = [0] * self.config['number_of_samples']
+        self.start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        self.run_count = 0
 
+        self.arduino_port = config['arduino_settings']['port']
+
+        self.arduino = self.initialize_arduino()
+        self.cameras = self.initialize_cameras()
+        
         # Create sample folders at the beginning
+        self.output_base_folder = self.setup_output_folder()
         self.create_sample_folders()
 
         self._header = r'''
@@ -67,7 +70,7 @@ class Experiment:
 
     def initialize_arduino(self):
         """Initialize Arduino based on the configuration."""
-        arduino_controller = ArduinoController()
+        arduino_controller = ArduinoController(port=self.arduino_port)
 
         # Set up input pins
         input_pins = self.config['arduino_settings']['input_pins']
