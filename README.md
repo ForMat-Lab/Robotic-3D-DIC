@@ -104,15 +104,16 @@ Before running the experiment, configure the `config.json` file according to you
     "interval_minutes": 30,
     "total_runs": -1,
     "output_folder": "captured_images",
+    "scale_factor": 0.5,
     "camera_settings": {
         "width": 2448,
         "height": 2048,
         "exposure_time": 100000,
-        "auto_exposure": true,
-        "auto_exposure_mode": "Once",
-        "scale_factor": 0.5
+        "auto_exposure": true
     },
     "arduino_settings": {
+        "port": "COM3",
+        "auto_detect_port": true,
         "input_pins": {
             "DO_CAPTURE": 6,
             "DO_RUN_COMPLETE": 7
