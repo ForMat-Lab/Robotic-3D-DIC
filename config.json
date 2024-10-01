@@ -1,0 +1,17 @@
+{
+    "experiment_name": "Test",
+    "number_of_samples": 10,
+    "interval": 5,
+    "output_folder": "captured_images",
+    "camera_settings": {
+        "width": 2448,
+        "height": 2048,
+        "exposure_time": 100000,
+        "auto_exposure": true,
+        "auto_exposure_mode": "Once",
+        "scale_factor": 0.25
+    },
+    "arduino_settings": {
+        "trigger_pin": 6
+    }
+}
