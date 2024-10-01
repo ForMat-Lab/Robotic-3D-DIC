@@ -20,6 +20,25 @@ logger = logging.getLogger(__name__)
 
 class Experiment:
     def __init__(self, config):
+
+        self._header = r'''
+8""8""8                   8"""8                     eeee  8""""8      8""""8 8  8""""8 
+8  8  8 e    e eeee eeeee 8   8  eeeee eeeee  eeeee    8  8    8      8    8 8  8    " 
+8e 8  8 8    8 8  8 8  88 8eee8e 8  88 8   8  8  88    8  8e   8      8e   8 8e 8e     
+88 8  8 8eeee8 8e   8   8 88   8 8   8 8eee8e 8   8 eee8  88   8 eeee 88   8 88 88     
+88 8  8   88   88   8   8 88   8 8   8 88   8 8   8    88 88   8      88   8 88 88   e 
+88 8  8   88   88e8 8eee8 88   8 8eee8 88eee8 8eee8 eee88 88eee8      88eee8 88 88eee8                                                                               
+
+    MycoRobo3d-DIC: Automated Imaging Acquisition System
+
+    Author: Özgüç B. Çapunaman
+    Maintainers: Özgüç B. Çapunaman, Alale Mohseni
+    Institution: ForMatLab @ Penn State University
+    Year: 2024
+    Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
+'''
+        print(self._header)
+
         self.config = config
         self.exposure_time = config['camera_settings']['exposure_time']
         self.auto_exposure = config['camera_settings'].get('auto_exposure', False)
@@ -42,7 +61,8 @@ class Experiment:
         self.start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         self.run_count = 0
 
-        self.arduino_port = config['arduino_settings']['port']
+        self.auto_detect_port = self.config['arduino_settings'].get('auto_detect_port', False)
+        self.arduino_port = None if self.auto_detect_port else config['arduino_settings']['port']
 
         self.arduino = self.initialize_arduino()
         self.cameras = self.initialize_cameras()
@@ -51,22 +71,6 @@ class Experiment:
         self.output_base_folder = self.setup_output_folder()
         self.create_sample_folders()
 
-        self._header = r'''
-8""8""8                   8"""8                     eeee  8""""8      8""""8 8  8""""8 
-8  8  8 e    e eeee eeeee 8   8  eeeee eeeee  eeeee    8  8    8      8    8 8  8    " 
-8e 8  8 8    8 8  8 8  88 8eee8e 8  88 8   8  8  88    8  8e   8      8e   8 8e 8e     
-88 8  8 8eeee8 8e   8   8 88   8 8   8 8eee8e 8   8 eee8  88   8 eeee 88   8 88 88     
-88 8  8   88   88   8   8 88   8 8   8 88   8 8   8    88 88   8      88   8 88 88   e 
-88 8  8   88   88e8 8eee8 88   8 8eee8 88eee8 8eee8 eee88 88eee8      88eee8 88 88eee8                                                                               
-
-    MycoRobo3d-DIC: Automated Imaging Acquisition System
-
-    Author: Özgüç B. Çapunaman
-    Maintainers: Özgüç B. Çapunaman, Alale Mohseni
-    Institution: ForMatLab @ Penn State University
-    Year: 2024
-    Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
-'''
 
     def initialize_arduino(self):
         """Initialize Arduino based on the configuration."""
@@ -129,16 +133,14 @@ class Experiment:
 
     def run(self):
         """Run the experiment."""
-        print(self._header)
-
         # User confirmation before starting the experiment
         while True:
-            user_input = input("Type 'start' to begin the experiment or 'q' to exit: ")
+            user_input = input("Type 'start' to begin the experiment or 'quit' to exit: ")
             if user_input.strip().lower() == 'start':
                 logger.info("Experiment started.")
                 logger.info("You can exit the experiment at any time by pressing Ctrl+C.")
                 break
-            elif user_input.strip().lower() == 'q':
+            elif user_input.strip().lower() == 'quit':
                 logger.info("Experiment aborted by user.")
                 self.cleanup()
                 return
@@ -313,17 +315,11 @@ class Experiment:
     def terminate_experiment(self):
         """Terminate the experiment and generate the report."""
         end_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        total_filesize = get_folder_size(self.output_base_folder)
         total_samples_collected = sum(self.visit_counts)
-        total_duration = datetime.strptime(end_time, '%Y-%m-%d_%H-%M-%S') - datetime.strptime(self.start_time, '%Y-%m-%d_%H-%M-%S')
         generate_pdf_report(
             self.config, self.start_time, end_time,
-            self.run_count, total_duration, total_samples_collected,
+            self.run_count, total_samples_collected,
             self.visit_counts, self.output_base_folder
-        )
-        logger.info(
-            f"Experiment completed. Total size: "
-            f"{total_filesize / (1024 * 1024):.2f} MB"
         )
 
     def cleanup(self):
@@ -359,6 +355,7 @@ def main():
         # Ensure cleanup in case of an exception
         if 'experiment' in locals():
             experiment.cleanup()
+
 
 if __name__ == "__main__":
     main()
