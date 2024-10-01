@@ -1,159 +1,174 @@
-# Project Setup Instructions
+# MycoRobo3D-DIC: Automated Imaging Acquisition System
 
-This README provides instructions on how to install the necessary Python libraries for the experiment image capture and PDF report generation project. You can install these libraries either in a virtual environment or directly on your system. It is recommended to set this up in the directory of the script.
+## Overview
 
-## Required Libraries
+**MycoRobo3D-DIC** is an automated imaging acquisition system designed for high-throughput studies. It integrates robotic automation with imaging hardware to capture images at predefined sample positions. The system facilitates synchronized movements and image captures between an ABB robot, Basler cameras, and an Arduino microcontroller.
 
-The following libraries are required for this project:
+---
 
-- `os` (built-in)
-- `cv2` (OpenCV)
-- `pypylon`
-- `datetime` (built-in)
-- `reportlab`
-- `logging` (built-in)
+## Table of Contents
 
-## Installation Instructions
+- [Features](#features)
+- [System Requirements](#system-requirements)
+- [Installation and Setup](#installation-and-setup)
+  - [1. Install Basler Pylon Software](#1-install-basler-pylon-software)
+  - [2. Install Anaconda](#2-install-anaconda)
+  - [3. Create Anaconda Environment and Install Libraries](#3-create-anaconda-environment-and-install-libraries)
+  - [4. Install Arduino IDE](#4-install-arduino-ide)
+  - [5. Flash Arduino with StandardFirmata](#5-flash-arduino-with-standardfirmata)
+- [Usage](#usage)
+  - [Configuration](#configuration)
+  - [Running the Experiment](#running-the-experiment)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
 
-First, navigate to the directory containing the script.
+---
 
-### Using a Virtual Environment
+## System Requirements
 
-Create a virtual environment (optional but recommended):
+- **Operating System**: Windows (required for Basler Pylon Software)
+- **Cameras**: Basler cameras compatible with Pylon SDK
+- **Microcontroller**: Arduino Uno or compatible board
+- **Robot**: ABB robot with RAPID programming capability
+- **Software**:
+  - Basler Pylon Software
+  - Anaconda Python Distribution
+  - Arduino IDE
 
-bash
+---
 
-``python -m venv venv``
+## Installation and Setup
 
+### 1. Install Basler Pylon Software
 
-Activate the virtual environment:
+Download and install the Basler Pylon Software from the official website:
 
-On Windows:
+- **[Basler Pylon Software Download](https://www.baslerweb.com/en/products/software/basler-pylon-camera-software-suite/)**
 
-bash
+**Installation Steps**:
 
-''venv\Scripts\activate''
+- **Profiles**: Select **Developer** during installation.
+- **Interfaces**: Choose **USB** as the interface type.
 
+---
 
-On macOS and Linux:
+### 2. Install Anaconda
 
-bash
+Download and install Anaconda for Python 3.x from the official website:
 
-''source venv/bin/activate''
+- **[Anaconda Installation Guide](https://docs.anaconda.com/anaconda/install/windows/)**
 
+---
 
+### 3. Create Anaconda Environment and Install Libraries
 
-Install the required libraries:
+1. **Open Anaconda Prompt**.
+2. Execute the following commands (do not include the `$` sign):
 
-bash
+   ```bash
+   conda create --name mycorobo3d-dic python=3.8
+   conda activate mycorobo3d-dic
+   pip install pypylon opencv-python pyfirmata reportlab
+   ```
 
-``pip install opencv-python-headless pypylon reportlab``
+---
 
+### 4. Install Arduino IDE
 
-### Without a Virtual Environment
+Download and install the Arduino IDE from the official website:
 
-If you choose not to use a virtual environment, you can install the required libraries directly on your system:
+- **[Arduino IDE Download](https://www.arduino.cc/en/software)**
 
-bash
+---
 
-``pip install opencv-python-headless pypylon reportlab``
+### 5. Flash Arduino with StandardFirmata
 
+1. **Open the Arduino IDE**.
+2. Navigate to **Tools > Manage Libraries**.
+3. **Search** for **Firmata** and **install** it.
+4. Go to **File > Examples > Firmata > StandardFirmata**.
+5. **Upload** the **StandardFirmata** sketch to your Arduino board.
 
-## Setting Up the Arduino
+---
 
-To use an Arduino as the trigger, you will need to set up the Arduino to send a signal to your system when it detects a trigger event. Here are the steps:
+## Usage
 
-1. **Gather the required components**:
-    - Arduino board (e.g., Arduino Uno)
-    - USB cable to connect the Arduino to your computer
-    
-    
+### Configuration
 
-2. **Install the Arduino IDE**:
-    - Download and install the Arduino IDE from the [official website](https://www.arduino.cc/en/software).
+Before running the experiment, configure the `config.json` file according to your setup. Here is an example configuration:
 
-3. **Write the Arduino code (oprtional)** :
-    - Open the Arduino IDE and write a simple sketch to send a signal to the computer. For example:
-
-\`\`\`cpp
-const int triggerPin = 2; // Pin connected to the trigger sensor
-void setup() {
-    Serial.begin(9600);
-    pinMode(triggerPin, INPUT);
-}
-
-void loop() {
-    if (digitalRead(triggerPin) == HIGH) {
-        Serial.println("TRIGGER");
-        delay(1000); // Debounce delay
+```json
+{
+    "experiment_name": "TestExperiment",
+    "number_of_samples": 10,
+    "interval_minutes": 30,
+    "total_runs": -1,
+    "output_folder": "captured_images",
+    "camera_settings": {
+        "width": 2448,
+        "height": 2048,
+        "exposure_time": 100000,
+        "auto_exposure": true,
+        "auto_exposure_mode": "Once",
+        "scale_factor": 0.5
+    },
+    "arduino_settings": {
+        "input_pins": {
+            "DO_CAPTURE": 6,
+            "DO_RUN_COMPLETE": 7
+        },
+        "output_pins": {
+            "DI_START": 8,
+            "DI_CAPTURE_COMPLETE": 9
+        }
     }
 }
-\`\`\`
+```
 
-4. **Upload the code to the Arduino**:
-    - Connect your Arduino to your computer using the USB cable.
-    - Select the correct board and port from the Tools menu.
-    - Click the Upload button in the Arduino IDE.
+**Note**: Adjust the parameters to match your experimental setup, including the number of samples, camera settings, and Arduino pin configurations.
 
-5. **Test the Arduino setup**:
-    - Open the Serial Monitor in the Arduino IDE to ensure it is sending "TRIGGER" messages when the sensor is activated.
+---
 
-## Running the Code
+### Running the Experiment
 
-### Steps
+1. **Connect Hardware**:
 
-1. **Initialize cameras**: Ensure your cameras are connected and recognized by the Basler Pylon SDK.
+   - Ensure that the Basler cameras are connected via USB.
+   - Connect the Arduino to your computer via USB.
+   - Set up the ABB robot and ensure it is connected to the Arduino via the appropriate I/O channels.
 
-2. **Run the script**:
+2. **Activate the Anaconda Environment**:
 
-bash
+   ```bash
+   conda activate mycorobo3d-dic
+   ```
 
-``python script.py``
+3. **Run the Main Script**:
 
+   ```bash
+   python main.py
+   ```
 
-3. Follow the prompts to enter:
-    - Experiment name (e.g., Calibration, Speckle, Other)
-    - Experimental description
-    - Number of samples in the experiment
-    - Exposure time (in microseconds)
-    - Press Enter to start the experiment
+4. **Follow On-Screen Instructions**:
 
-4. **Monitor for triggers**:
-    - Modify your Python script to listen for the "TRIGGER" message from the Arduino over the serial port and initiate image capture. 
+   - The script will display a header and prompt you to start the experiment.
+   - Type `'start'` to begin or `'q'` to exit.
+   - The experiment will run according to the configuration settings.
 
+5. **Monitor the Experiment**:
 
+   - The script provides logging information about the experiment's progress.
+   - You can exit the experiment at any time by pressing `Ctrl+C`.
 
-# Initialize serial connection (adjust COM port as needed)
-``ser = serial.Serial('COM3', 9600)``
+---
 
+## Acknowledgments
 
+- **Author**: Özgüç B. Çapunaman
+- **Maintainers**: Özgüç B. Çapunaman, Alale Mohseni
+- **Institution**: ForMatLab @ Penn State University
+- **Year**: 2024
 
+---
 
-5. **Terminate the script**: During execution, press 'q' to quit and terminate the image capture process.
-
-## Notes
-
-- Ensure your Arduino is properly set up and connected to your computer.
-- Modify the trigger detection logic as per your specific setup.
-
-## Troubleshooting
-
-### Common Issues
-
-- **Failed to initialize cameras**: Ensure that the cameras are properly connected and the Pylon SDK is correctly installed.
-- **TimeoutException during image retrieval**: Check camera connections and ensure the exposure time is correctly set.
-- **Arduino not detected**: Ensure the correct COM port is selected and the Arduino drivers are installed.
-
-## Logging
-
-- Logs are configured to provide detailed information and errors, which can be helpful for troubleshooting.
-- Check the log messages in the console for any errors and follow the suggested actions.
-
-## References
-
-For further assistance, refer to the official documentation of the libraries used:
-
-- [OpenCV Documentation](https://docs.opencv.org/)
-- [ReportLab Documentation](https://www.reportlab.com/docs/reportlab-userguide.pdf)
-- [Pypylon Documentation](https://github.com/basler/pypylon)
-- [Arduino Documentation](https://www.arduino.cc/en/Tutorial/HomePage)
+If you have any questions or need further assistance, please contact the maintainers.

@@ -1,7 +1,8 @@
 {
-    "experiment_name": "Test",
+    "experiment_name": "TestExperiment",
     "number_of_samples": 10,
-    "interval": 5,
+    "interval_minutes": 30,
+    "total_runs": -1,
     "output_folder": "captured_images",
     "camera_settings": {
         "width": 2448,
@@ -9,9 +10,16 @@
         "exposure_time": 100000,
         "auto_exposure": true,
         "auto_exposure_mode": "Once",
-        "scale_factor": 0.25
+        "scale_factor": 0.5
     },
     "arduino_settings": {
-        "trigger_pin": 6
+        "input_pins": {
+            "DO_CAPTURE": 6,
+            "DO_RUN_COMPLETE": 7
+        },
+        "output_pins": {
+            "DI_START": 8,
+            "DI_CAPTURE_COMPLETE": 9
+        }
     }
 }

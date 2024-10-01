@@ -1,18 +1,16 @@
+# src/Camera.py
+
 import cv2
 from pypylon import pylon
-import os
 import logging
-from datetime import datetime
 
 class Camera:
-    def __init__(self, width=2448, height=2048, exposure_time=5000, timeout=5000, scale_factor=0.5):
+    def __init__(
+        self, width=2448, height=2048, exposure_time=5000,
+        timeout=5000, scale_factor=0.5
+    ):
         """
         Initialize the camera controller with configurable parameters.
-        :param width: The width resolution of the camera frames.
-        :param height: The height resolution of the camera frames.
-        :param exposure_time: The exposure time for capturing images (in microseconds).
-        :param timeout: The timeout for retrieving frames (in milliseconds).
-        :param scale_factor: The scale factor for resizing frames for display.
         """
         self.width = width
         self.height = height
@@ -25,8 +23,10 @@ class Camera:
         """
         Initialize and open all available cameras.
         """
-        self.cameras = [pylon.InstantCamera(pylon.TlFactory.GetInstance().CreateDevice(device))
-                        for device in pylon.TlFactory.GetInstance().EnumerateDevices()]
+        self.cameras = [
+            pylon.InstantCamera(pylon.TlFactory.GetInstance().CreateDevice(device))
+            for device in pylon.TlFactory.GetInstance().EnumerateDevices()
+        ]
         for camera in self.cameras:
             camera.Open()
         logging.info("All cameras initialized and opened.")
@@ -48,34 +48,49 @@ class Camera:
             camera.Width.SetValue(self.width)
             camera.Height.SetValue(self.height)
             camera.ExposureTime.SetValue(self.exposure_time)
-        logging.info(f"Camera settings applied. Width: {self.width}, Height: {self.height}, Exposure Time: {self.exposure_time} µs.")
+        logging.info(
+            f"Camera settings applied. Width: {self.width}, "
+            f"Height: {self.height}, Exposure Time: {self.exposure_time} µs."
+        )
 
     def set_auto_exposure(self, mode='Once'):
         """
         Enable auto exposure for all initialized cameras.
         """
+        exposure_times = []
         for camera in self.cameras:
             try:
                 camera.ExposureAuto.SetValue(mode)  # Set the auto-exposure mode
-                logging.info(f"Auto-exposure {mode} enabled for camera: {camera.GetDeviceInfo().GetModelName()}")
-                exposure_value = camera.ExposureTime.GetValue()
-                logging.info(f"Current exposure time: {exposure_value} µs")
-
+                logging.info(
+                    f"Auto-exposure {mode} enabled for camera: "
+                    f"{camera.GetDeviceInfo().GetModelName()}"
+                )
+                exposure_time = camera.ExposureTime.GetValue()
+                exposure_times.append(exposure_time)
+                logging.info(f"Current exposure time: {exposure_time} µs")
             except Exception as e:
-                logging.error(f"Failed to enable auto-exposure for camera {camera.GetDeviceInfo().GetModelName()}: {e}")
-
+                logging.error(
+                    f"Failed to enable auto-exposure for camera "
+                    f"{camera.GetDeviceInfo().GetModelName()}: {e}"
+                )
+        return sum(exposure_times) // len(exposure_times)
     def set_manual_exposure(self, exposure_time):
         """
         Set a manual exposure time for all initialized cameras.
-        :param exposure_time: The exposure time to set (in microseconds).
         """
         for camera in self.cameras:
             try:
                 camera.ExposureAuto.SetValue('Off')  # Turn off auto-exposure
                 camera.ExposureTime.SetValue(exposure_time)  # Set manual exposure time
-                logging.info(f"Manual exposure time set to {exposure_time} µs for camera: {camera.GetDeviceInfo().GetModelName()}")
+                logging.info(
+                    f"Manual exposure time set to {exposure_time} µs for camera: "
+                    f"{camera.GetDeviceInfo().GetModelName()}"
+                )
             except Exception as e:
-                logging.error(f"Failed to set manual exposure for camera {camera.GetDeviceInfo().GetModelName()}: {e}")
+                logging.error(
+                    f"Failed to set manual exposure for camera "
+                    f"{camera.GetDeviceInfo().GetModelName()}: {e}"
+                )
 
     def grab_frames(self):
         """
@@ -85,23 +100,20 @@ class Camera:
         frames = []
         for camera in self.cameras:
             if camera.IsGrabbing():
-                grab_result = camera.RetrieveResult(self.timeout, pylon.TimeoutHandling_ThrowException)
+                grab_result = camera.RetrieveResult(
+                    self.timeout, pylon.TimeoutHandling_ThrowException
+                )
                 if grab_result.GrabSucceeded():
                     frames.append(grab_result.Array)
+                else:
+                    logging.error(
+                        f"Failed to grab frame from camera: "
+                        f"{camera.GetDeviceInfo().GetModelName()}"
+                    )
                 grab_result.Release()
             else:
                 logging.error("Camera is not grabbing frames.")
         return frames
-
-    def display_frames(self, frames):
-        """
-        Display frames concatenated in a single CV2 window.
-        :param frames: The list of frames to display.
-        """
-        if frames:
-            resized_frames = [cv2.resize(frame, (0, 0), fx=self.scale_factor, fy=self.scale_factor) for frame in frames]
-            concatenated_frame = cv2.hconcat(resized_frames)
-            cv2.imshow('Captured Images', concatenated_frame)
 
     def close_cameras(self):
         """
@@ -110,7 +122,8 @@ class Camera:
         for camera in self.cameras:
             if camera.IsGrabbing():
                 camera.StopGrabbing()
-            camera.Close()
+            if camera.IsOpen():
+                camera.Close()
         cv2.destroyAllWindows()
         logging.info("All cameras closed.")
 
