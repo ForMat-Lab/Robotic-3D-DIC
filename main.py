@@ -158,7 +158,7 @@ class Experiment:
     def execute_run(self):
         """Execute the image capture for the current run."""
 
-        sample_index = 0  # Sample index starts from 0
+        sample_index = 0
 
         # Wait for the robot to signal run completion by setting DO_RUN_ACTIVE low
         while self.arduino.read_digital(self.DO_RUN_ACTIVE_pin):
