@@ -1,10 +1,12 @@
+# main.py
+
 import os
 import time
 import cv2
 import numpy as np
 import logging
-from datetime import datetime, timedelta
-from src.util import load_config, generate_pdf_report, get_folder_size
+from datetime import datetime
+from src.util import load_config, generate_pdf_report
 from src.Arduino import ArduinoController
 from src.Camera import Camera
 
@@ -19,24 +21,6 @@ logger = logging.getLogger(__name__)
 class Experiment:
     def __init__(self, config):
 
-        self._header = r'''
-8""8""8                   8"""8                     eeee  8""""8      8""""8 8  8""""8 
-8  8  8 e    e eeee eeeee 8   8  eeeee eeeee  eeeee    8  8    8      8    8 8  8    " 
-8e 8  8 8    8 8  8 8  88 8eee8e 8  88 8   8  8  88    8  8e   8      8e   8 8e 8e     
-88 8  8 8eeee8 8e   8   8 88   8 8   8 8eee8e 8   8 eee8  88   8 eeee 88   8 88 88     
-88 8  8   88   88   8   8 88   8 8   8 88   8 8   8    88 88   8      88   8 88 88   e 
-88 8  8   88   88e8 8eee8 88   8 8eee8 88eee8 8eee8 eee88 88eee8      88eee8 88 88eee8                                                                               
-
-    MycoRobo3d-DIC: Automated Imaging Acquisition System
-
-    Author: Özgüç B. Çapunaman
-    Maintainers: Özgüç B. Çapunaman, Alale Mohseni
-    Institution: ForMatLab @ Penn State University
-    Year: 2024
-    Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
-'''
-        print(self._header)
-
         self.config = config
         self.exposure_time = config['camera_settings']['exposure_time']
         self.auto_exposure = config['camera_settings'].get('auto_exposure', False)
@@ -44,17 +28,12 @@ class Experiment:
 
         # Pin configurations
         arduino_input_pins = config['arduino_settings']['input_pins']
-        arduino_output_pins = config['arduino_settings']['output_pins']
         self.DO_CAPTURE_pin = arduino_input_pins['DO_CAPTURE']
-        self.DO_RUN_COMPLETE_pin = arduino_input_pins['DO_RUN_COMPLETE']  # New pin for run completion signal
-        self.DI_START_pin = arduino_output_pins['DI_START']
-        self.DI_CAPTURE_COMPLETE_pin = arduino_output_pins['DI_CAPTURE_COMPLETE']
+        self.DO_RUN_ACTIVE_pin = arduino_input_pins['DO_RUN_ACTIVE']  # Robot sets this high during the run
 
         # Experiment parameters
         self.num_samples = config['number_of_samples']
-        self.interval_minutes = config.get('interval_minutes', 30)
-        self.total_runs = config.get('total_runs', -1)  # -1 for infinite runs
-        self.scale_factor = config.get('scale_factor', 0.5)
+        self.scale_factor = config['camera_settings'].get('scale_factor', 0.5)
         self.visit_counts = [0] * self.config['number_of_samples']
         self.start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         self.run_count = 0
@@ -63,12 +42,11 @@ class Experiment:
         self.arduino_port = None if self.auto_detect_port else config['arduino_settings']['port']
 
         self.arduino = self.initialize_arduino()
-        self.cameras = self.initialize_cameras()
-        
+        self.cameras = None
+
         # Create sample folders at the beginning
         self.output_base_folder = self.setup_output_folder()
         self.create_sample_folders()
-
 
     def initialize_arduino(self):
         """Initialize Arduino based on the configuration."""
@@ -79,12 +57,6 @@ class Experiment:
         for name, pin in input_pins.items():
             arduino_controller.setup_digital_input(pin)
             logger.info(f"Arduino input pin set up: {name} on pin {pin}")
-
-        # Set up output pins
-        output_pins = self.config['arduino_settings']['output_pins']
-        for name, pin in output_pins.items():
-            arduino_controller.setup_digital_output(pin)
-            logger.info(f"Arduino output pin set up: {name} on pin {pin}")
 
         return arduino_controller
 
@@ -100,9 +72,22 @@ class Experiment:
         camera.start_grabbing()
         logger.info("Cameras initialized and started grabbing.")
 
-        # Set exposure time based on auto_exposure flag
-        if not self.auto_exposure:
-            # If auto_exposure is False, set the exposure time from config
+        # Set exposure time based on exposure_set flag
+        if not self.exposure_set:
+            if self.auto_exposure:
+                # Perform auto-exposure
+                logger.info("Performing auto-exposure.")
+                self.exposure_time = camera.set_auto_exposure('Once')
+                logger.info(f"Auto-detected exposure time: {self.exposure_time} µs")
+                # Set manual exposure to the detected value
+                camera.set_manual_exposure(self.exposure_time)
+            else:
+                # Use the user-set exposure time from config
+                camera.set_manual_exposure(self.exposure_time)
+                logger.info(f"Exposure time set to {self.exposure_time} µs.")
+            self.exposure_set = True  # Exposure has been set
+        else:
+            # Set the previously determined exposure time
             camera.set_manual_exposure(self.exposure_time)
             logger.info(f"Exposure time set to {self.exposure_time} µs.")
 
@@ -143,14 +128,24 @@ class Experiment:
                 self.cleanup()
                 return
         try:
-            while self.total_runs == -1 or self.run_count < self.total_runs:
-                logger.info(f"Starting run {self.run_count}")
+            while True:
+                # Wait for the robot to signal the start of a run
+                logger.info("Waiting for the robot to start the run.")
+                while not self.arduino.read_digital(self.DO_RUN_ACTIVE_pin):
+                    time.sleep(0.1)
+                logger.info(f"Run {self.run_count} started.")
+
+                # Initialize cameras at the beginning of each run
+                self.cameras = self.initialize_cameras()
+
                 self.execute_run()
-                self.run_count += 1  # Increment actual run count
-                if self.total_runs != -1 and self.run_count >= self.total_runs:
-                    break
-                self.enter_break()
-            self.terminate_experiment()
+
+                # Close cameras at the end of each run
+                self.cameras.close_cameras()
+                logger.info("Cameras closed at the end of the run.")
+
+                self.run_count += 1  # Increment run count
+
         except KeyboardInterrupt:
             logger.info("Experiment interrupted by user.")
             self.terminate_experiment()
@@ -162,33 +157,23 @@ class Experiment:
 
     def execute_run(self):
         """Execute the image capture for the current run."""
-        # Signal the robot to start
-        logger.info(f"Run {self.run_count}: Signaling robot to start the run.")
-        self.arduino.set_digital(self.DI_START_pin, True)
 
-        sample_index = 0
-        # Wait for the robot to signal run completion
-        while True:
+        sample_index = 0  # Sample index starts from 0
+
+        # Wait for the robot to signal run completion by setting DO_RUN_ACTIVE low
+        while self.arduino.read_digital(self.DO_RUN_ACTIVE_pin):
             print("Waiting for capture signal.", end='\r')
             if self.arduino.check_rising_edge(self.DO_CAPTURE_pin):
                 # Robot signals it's ready to capture
                 self.handle_capture_signal(sample_index)
                 sample_index += 1
-            if self.arduino.read_digital(self.DO_RUN_COMPLETE_pin):
-                # Robot signals the run is complete
-                logger.info(f"Run {self.run_count}: Robot has signaled run completion.")
-                break
-
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 logger.info("Experiment interrupted by user.")
                 raise KeyboardInterrupt
-
             time.sleep(0.01)  # Small delay to prevent high CPU usage
 
-        # Reset DI_START to LOW to prepare for next run
-        self.arduino.set_digital(self.DI_START_pin, False)
-        logger.info(f"Run {self.run_count} execution completed, with {sample_index} captures.")
+        logger.info(f"Run {self.run_count} completed, with {sample_index} captures.")
 
     def handle_capture_signal(self, sample_index):
         """Handle the capture signal from the robot."""
@@ -201,16 +186,6 @@ class Experiment:
 
         # Capture images
         self.capture_images(sample_index)
-
-        # Signal robot that capture is complete
-        logger.info("Signaling robot that capture is complete.")
-        self.arduino.set_digital(self.DI_CAPTURE_COMPLETE_pin, True)
-
-        # Wait briefly to ensure robot receives the signal
-        time.sleep(1)
-
-        # Reset DI_CAPTURE_COMPLETE to LOW
-        self.arduino.set_digital(self.DI_CAPTURE_COMPLETE_pin, False)
 
     def set_exposure(self):
         """Set the exposure for cameras based on configuration or auto-detection."""
@@ -265,51 +240,6 @@ class Experiment:
         cv2.imshow('Combined Image', combined_image)
         cv2.waitKey(1)  # Display the image briefly
 
-    def enter_break(self):
-        """Enter a break period between runs."""
-        logger.info(f"Entering break period of {self.interval_minutes} minutes.")
-        logger.info(f"Closing cameras and cleaning up signals.")
-        self.cameras.close_cameras()
-        self.arduino.set_digital(self.DI_START_pin, False)  # Ensure DI_START is LOW
-
-        # Calculate when the break will resume
-        resume_time = datetime.now() + timedelta(minutes=self.interval_minutes)
-        logger.info(f"Break will resume at {resume_time.strftime('%Y-%m-%d %H:%M:%S')}")
-        logger.info("You can exit the experiment during the break by pressing Ctrl+C.")
-
-        t0 = time.time()
-        total_break_seconds = self.interval_minutes * 60
-
-        try:
-            while True:
-                elapsed = time.time() - t0
-                remaining = total_break_seconds - elapsed
-                if remaining <= 0:
-                    break
-                mins, secs = divmod(int(remaining), 60)
-                time_format = f'{mins:02d}:{secs:02d}'
-                print(f'Break time remaining: {time_format}', end='\r')
-                time.sleep(1)
-        except KeyboardInterrupt:
-            logger.info("Experiment interrupted by user during break.")
-            raise
-
-        print('\n')  # Move to next line after break
-
-        # Re-initialize cameras after break
-        self.reinitialize_cameras()
-
-    def reinitialize_cameras(self):
-        """Re-initialize cameras after a break, ensuring exposure time remains the same."""
-        logger.info("Re-initializing cameras after break.")
-        self.cameras.initialize_cameras()
-        self.cameras.start_grabbing()
-        logger.info("Cameras re-initialized and started grabbing.")
-
-        # Set exposure time based on previously saved exposure_time
-        self.cameras.set_manual_exposure(self.exposure_time)
-        logger.info(f"Exposure time set to {self.exposure_time} µs after break.")
-
     def terminate_experiment(self):
         """Terminate the experiment and generate the report."""
         end_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -338,6 +268,22 @@ class Experiment:
 
 def main():
     try:
+        print(r'''
+8""8""8                   8"""8                     eeee  8""""8      8""""8 8  8""""8 
+8  8  8 e    e eeee eeeee 8   8  eeeee eeeee  eeeee    8  8    8      8    8 8  8    " 
+8e 8  8 8    8 8  8 8  88 8eee8e 8  88 8   8  8  88    8  8e   8      8e   8 8e 8e     
+88 8  8 8eeee8 8e   8   8 88   8 8   8 8eee8e 8   8 eee8  88   8 eeee 88   8 88 88     
+88 8  8   88   88   8   8 88   8 8   8 88   8 8   8    88 88   8      88   8 88 88   e 
+88 8  8   88   88e8 8eee8 88   8 8eee8 88eee8 8eee8 eee88 88eee8      88eee8 88 88eee8                                                                               
+
+    MycoRobo3d-DIC: Automated Imaging Acquisition System
+
+    Author: Özgüç B. Çapunaman
+    Maintainers: Özgüç B. Çapunaman, Alale Mohseni
+    Institution: ForMatLab @ Penn State University
+    Year: 2024
+    Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
+''')
         # Load configuration
         config = load_config()
         if not config:
