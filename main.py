@@ -169,7 +169,7 @@ class Experiment:
         sample_index = 0
         # Wait for the robot to signal run completion
         while True:
-            logger.info("Waiting for capture signal.")
+            print("Waiting for capture signal.", end='\r')
             if self.arduino.check_rising_edge(self.DO_CAPTURE_pin):
                 # Robot signals it's ready to capture
                 self.handle_capture_signal(sample_index)
