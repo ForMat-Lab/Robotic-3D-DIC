@@ -47,7 +47,7 @@ class Experiment:
         arduino_output_pins = config['arduino_settings']['output_pins']
         self.DO_CAPTURE_pin = arduino_input_pins['DO_CAPTURE']
         self.DO_RUN_COMPLETE_pin = arduino_input_pins['DO_RUN_COMPLETE']  # New pin for run completion signal
-        self.DI_START_pin = arduino_output_pins['DI_START']
+        self.DI_RUN_pin = arduino_output_pins['DI_START']
         self.DI_CAPTURE_COMPLETE_pin = arduino_output_pins['DI_CAPTURE_COMPLETE']
 
         # Experiment parameters
@@ -164,7 +164,7 @@ class Experiment:
         """Execute the image capture for the current run."""
         # Signal the robot to start
         logger.info(f"Run {self.run_count}: Signaling robot to start the run.")
-        self.arduino.set_digital(self.DI_START_pin, True)
+        self.arduino.set_digital(self.DI_RUN_pin, True)
 
         sample_index = 0
         # Wait for the robot to signal run completion
@@ -187,7 +187,7 @@ class Experiment:
             time.sleep(0.01)  # Small delay to prevent high CPU usage
 
         # Reset DI_START to LOW to prepare for next run
-        self.arduino.set_digital(self.DI_START_pin, False)
+        self.arduino.set_digital(self.DI_RUN_pin, False)
         logger.info(f"Run {self.run_count} execution completed, with {sample_index} captures.")
 
     def handle_capture_signal(self, sample_index):
@@ -270,7 +270,7 @@ class Experiment:
         logger.info(f"Entering break period of {self.interval_minutes} minutes.")
         logger.info(f"Closing cameras and cleaning up signals.")
         self.cameras.close_cameras()
-        self.arduino.set_digital(self.DI_START_pin, False)  # Ensure DI_START is LOW
+        self.arduino.set_digital(self.DI_RUN_pin, False)  # Ensure DI_START is LOW
 
         # Calculate when the break will resume
         resume_time = datetime.now() + timedelta(minutes=self.interval_minutes)
