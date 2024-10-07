@@ -47,7 +47,7 @@ class Experiment:
         arduino_output_pins = config['arduino_settings']['output_pins']
         self.DO_CAPTURE_pin = arduino_input_pins['DO_CAPTURE']
         self.DO_RUN_COMPLETE_pin = arduino_input_pins['DO_RUN_COMPLETE']  # New pin for run completion signal
-        self.DI_RUN_pin = arduino_output_pins['DI_START']
+        self.DI_RUN_pin = arduino_output_pins['DI_RUN']
         self.DI_CAPTURE_COMPLETE_pin = arduino_output_pins['DI_CAPTURE_COMPLETE']
 
         # Experiment parameters
