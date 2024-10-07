@@ -162,11 +162,11 @@ if __name__ == "__main__":
             while True:
                 # Blink signal
                 arduino.set_digital(output_pin, True)
-                logging.info("Signal on pin {output_pin} set to HIGH")
+                logging.info(f"Signal on pin {output_pin} set to HIGH")
                 time.sleep(1)
 
                 arduino.set_digital(output_pin, False)
-                logging.info("Signal on pin {output_pin} set to LOW")
+                logging.info(f"Signal on pin {output_pin} set to LOW")
                 time.sleep(1)
 
                 # Read state of digital input pin input_pin
