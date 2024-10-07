@@ -1,25 +1,26 @@
 {
     "experiment_name": "TestExperiment",
-    "number_of_samples": 10,
+    "number_of_samples": 9,
     "interval_minutes": 30,
     "total_runs": -1,
     "output_folder": "captured_images",
+    "display_scale_factor": 0.25,
     "camera_settings": {
         "width": 2448,
         "height": 2048,
         "exposure_time": 100000,
-        "auto_exposure": true,
-        "auto_exposure_mode": "Once",
-        "scale_factor": 0.5
+        "auto_exposure": true
     },
     "arduino_settings": {
+        "port": "COM3",
+        "auto_detect_port": true,
         "input_pins": {
-            "DO_CAPTURE": 6,
-            "DO_RUN_COMPLETE": 7
+            "DO_RUN_COMPLETE": 6,
+            "DO_CAPTURE": 7
         },
         "output_pins": {
-            "DI_START": 8,
-            "DI_CAPTURE_COMPLETE": 9
+            "DI_RUN": 2,
+            "DI_CAPTURE_COMPLETE": 3
         }
     }
 }

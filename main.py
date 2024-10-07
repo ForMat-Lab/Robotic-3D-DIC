@@ -1,5 +1,3 @@
-# main.py
-
 import os
 import time
 import cv2
@@ -20,33 +18,6 @@ logger = logging.getLogger(__name__)
 
 class Experiment:
     def __init__(self, config):
-        self.config = config
-        self.exposure_time = config['camera_settings']['exposure_time']
-        self.auto_exposure = config['camera_settings'].get('auto_exposure', False)
-        self.exposure_set = False  # Flag to indicate if exposure has been set after auto-exposure
-        self.arduino = self.initialize_arduino()
-        self.cameras = self.initialize_cameras()
-        self.output_base_folder = self.setup_output_folder()
-        self.visit_counts = [0] * self.config['number_of_samples']
-        self.start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        self.run_count = 0
-
-        # Pin configurations
-        arduino_input_pins = config['arduino_settings']['input_pins']
-        arduino_output_pins = config['arduino_settings']['output_pins']
-        self.DO_CAPTURE_pin = arduino_input_pins['DO_CAPTURE']
-        self.DO_RUN_COMPLETE_pin = arduino_input_pins['DO_RUN_COMPLETE']  # New pin for run completion signal
-        self.DI_START_pin = arduino_output_pins['DI_START']
-        self.DI_CAPTURE_COMPLETE_pin = arduino_output_pins['DI_CAPTURE_COMPLETE']
-
-        # Experiment parameters
-        self.num_samples = config['number_of_samples']
-        self.interval_minutes = config.get('interval_minutes', 30)
-        self.total_runs = config.get('total_runs', 3)  # -1 for infinite runs
-        self.scale_factor = config['camera_settings'].get('scale_factor', 0.5)
-
-        # Create sample folders at the beginning
-        self.create_sample_folders()
 
         self._header = r'''
 8""8""8                   8"""8                     eeee  8""""8      8""""8 8  8""""8 
@@ -64,10 +35,44 @@ class Experiment:
     Year: 2024
     Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
 '''
+        print(self._header)
+
+        self.config = config
+        self.exposure_time = config['camera_settings']['exposure_time']
+        self.auto_exposure = config['camera_settings'].get('auto_exposure', False)
+        self.exposure_set = False  # Flag to indicate if exposure has been set after auto-exposure
+
+        # Pin configurations
+        arduino_input_pins = config['arduino_settings']['input_pins']
+        arduino_output_pins = config['arduino_settings']['output_pins']
+        self.DO_CAPTURE_pin = arduino_input_pins['DO_CAPTURE']
+        self.DO_RUN_COMPLETE_pin = arduino_input_pins['DO_RUN_COMPLETE']  # New pin for run completion signal
+        self.DI_RUN_pin = arduino_output_pins['DI_RUN']
+        self.DI_CAPTURE_COMPLETE_pin = arduino_output_pins['DI_CAPTURE_COMPLETE']
+
+        # Experiment parameters
+        self.num_samples = config['number_of_samples']
+        self.interval_minutes = config.get('interval_minutes', 30)
+        self.total_runs = config.get('total_runs', -1)  # -1 for infinite runs
+        self.scale_factor = config.get('scale_factor', 0.5)
+        self.visit_counts = [0] * self.config['number_of_samples']
+        self.start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        self.run_count = 0
+
+        self.auto_detect_port = self.config['arduino_settings'].get('auto_detect_port', False)
+        self.arduino_port = None if self.auto_detect_port else config['arduino_settings']['port']
+
+        self.arduino = self.initialize_arduino()
+        self.cameras = self.initialize_cameras()
+        
+        # Create sample folders at the beginning
+        self.output_base_folder = self.setup_output_folder()
+        self.create_sample_folders()
+
 
     def initialize_arduino(self):
         """Initialize Arduino based on the configuration."""
-        arduino_controller = ArduinoController()
+        arduino_controller = ArduinoController(port=self.arduino_port)
 
         # Set up input pins
         input_pins = self.config['arduino_settings']['input_pins']
@@ -92,14 +97,15 @@ class Experiment:
             scale_factor=self.scale_factor
         )
         camera.initialize_cameras()
-        camera.start_grabbing()
-        logger.info("Cameras initialized and started grabbing.")
 
         # Set exposure time based on auto_exposure flag
         if not self.auto_exposure:
             # If auto_exposure is False, set the exposure time from config
             camera.set_manual_exposure(self.exposure_time)
             logger.info(f"Exposure time set to {self.exposure_time} µs.")
+
+        camera.start_grabbing()
+        logger.info("Cameras initialized and started grabbing.")
 
         return camera
 
@@ -126,16 +132,14 @@ class Experiment:
 
     def run(self):
         """Run the experiment."""
-        print(self._header)
-
         # User confirmation before starting the experiment
         while True:
-            user_input = input("Type 'start' to begin the experiment or 'q' to exit: ")
+            user_input = input("Type 'start' to begin the experiment or 'quit' to exit: ")
             if user_input.strip().lower() == 'start':
                 logger.info("Experiment started.")
                 logger.info("You can exit the experiment at any time by pressing Ctrl+C.")
                 break
-            elif user_input.strip().lower() == 'q':
+            elif user_input.strip().lower() == 'quit':
                 logger.info("Experiment aborted by user.")
                 self.cleanup()
                 return
@@ -161,12 +165,12 @@ class Experiment:
         """Execute the image capture for the current run."""
         # Signal the robot to start
         logger.info(f"Run {self.run_count}: Signaling robot to start the run.")
-        self.arduino.set_digital(self.DI_START_pin, True)
+        self.arduino.set_digital(self.DI_RUN_pin, True)
 
         sample_index = 0
         # Wait for the robot to signal run completion
         while True:
-            logger.info("Waiting for capture signal.")
+            print("Waiting for capture signal.", end='\r')
             if self.arduino.check_rising_edge(self.DO_CAPTURE_pin):
                 # Robot signals it's ready to capture
                 self.handle_capture_signal(sample_index)
@@ -184,7 +188,7 @@ class Experiment:
             time.sleep(0.01)  # Small delay to prevent high CPU usage
 
         # Reset DI_START to LOW to prepare for next run
-        self.arduino.set_digital(self.DI_START_pin, False)
+        self.arduino.set_digital(self.DI_RUN_pin, False)
         logger.info(f"Run {self.run_count} execution completed, with {sample_index} captures.")
 
     def handle_capture_signal(self, sample_index):
@@ -267,7 +271,7 @@ class Experiment:
         logger.info(f"Entering break period of {self.interval_minutes} minutes.")
         logger.info(f"Closing cameras and cleaning up signals.")
         self.cameras.close_cameras()
-        self.arduino.set_digital(self.DI_START_pin, False)  # Ensure DI_START is LOW
+        self.arduino.set_digital(self.DI_RUN_pin, False)  # Ensure DI_START is LOW
 
         # Calculate when the break will resume
         resume_time = datetime.now() + timedelta(minutes=self.interval_minutes)
@@ -300,27 +304,23 @@ class Experiment:
         """Re-initialize cameras after a break, ensuring exposure time remains the same."""
         logger.info("Re-initializing cameras after break.")
         self.cameras.initialize_cameras()
-        self.cameras.start_grabbing()
-        logger.info("Cameras re-initialized and started grabbing.")
 
         # Set exposure time based on previously saved exposure_time
         self.cameras.set_manual_exposure(self.exposure_time)
         logger.info(f"Exposure time set to {self.exposure_time} µs after break.")
 
+        self.cameras.start_grabbing()
+        logger.info("Cameras re-initialized and started grabbing.")
+
+
     def terminate_experiment(self):
         """Terminate the experiment and generate the report."""
         end_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        total_filesize = get_folder_size(self.output_base_folder)
         total_samples_collected = sum(self.visit_counts)
-        total_duration = datetime.strptime(end_time, '%Y-%m-%d_%H-%M-%S') - datetime.strptime(self.start_time, '%Y-%m-%d_%H-%M-%S')
         generate_pdf_report(
             self.config, self.start_time, end_time,
-            self.run_count, total_duration, total_samples_collected,
+            self.run_count, total_samples_collected,
             self.visit_counts, self.output_base_folder
-        )
-        logger.info(
-            f"Experiment completed. Total size: "
-            f"{total_filesize / (1024 * 1024):.2f} MB"
         )
 
     def cleanup(self):
@@ -356,6 +356,7 @@ def main():
         # Ensure cleanup in case of an exception
         if 'experiment' in locals():
             experiment.cleanup()
+
 
 if __name__ == "__main__":
     main()

@@ -1,5 +1,3 @@
-# src/Camera.py
-
 import cv2
 from pypylon import pylon
 import logging
@@ -114,6 +112,16 @@ class Camera:
             else:
                 logging.error("Camera is not grabbing frames.")
         return frames
+    
+    def display_frames(self, frames):
+        """
+        Display frames concatenated in a single CV2 window.
+        :param frames: The list of frames to display.
+        """
+        if frames:
+            resized_frames = [cv2.resize(frame, (0, 0), fx=self.scale_factor, fy=self.scale_factor) for frame in frames]
+            concatenated_frame = cv2.hconcat(resized_frames)
+            cv2.imshow('Captured Images', concatenated_frame)
 
     def close_cameras(self):
         """

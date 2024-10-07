@@ -51,7 +51,7 @@ class ArduinoController:
         if self.board:
             self.output_pins[pin] = self.board.get_pin(f'd:{pin}:o')  # d for digital, o for output
             self.set_digital(pin, False)
-            logging.info(f"Set up digital output on pin {pin}")
+            logging.info(f"Set up digital output on pin {pin}.")
         else:
             logging.error("Board is not connected. Cannot setup pin.")
 
@@ -74,7 +74,7 @@ class ArduinoController:
             # Initialize previous state
             initial_state = self.read_digital(pin)
             self.prev_states[pin] = initial_state if initial_state is not None else False
-            logging.info(f"Set up digital input on pin {pin} with initial state {self.prev_states[pin]}")
+            logging.info(f"Set up digital input on pin {pin}.")
         else:
             logging.error("Board is not connected. Cannot setup pin.")
 
@@ -138,10 +138,10 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    def test_arduino_controller():
+    def test_arduino_controller(input_pin = 6, output_pin = 2):
         """
-        A test function to initialize the ArduinoController, set up digital input pins,
-        and read their states.
+        A test function to initialize the ArduinoController, set up digital input and output pins,
+        read their states, and blink an signal on pin {output_pin}.
         """
         try:
             # Step 1: Initialize the ArduinoController (with auto-detect port)
@@ -150,16 +150,28 @@ if __name__ == "__main__":
                 logging.error("Failed to initialize Arduino. Exiting test.")
                 return
 
-            # Step 2: Set up digital input pins (using pin 6 as an example)
-            arduino.setup_digital_input(6)
-            logging.info("Digital input set up on pin 6.")
+            # Step 2: Set up digital input pins
+            arduino.setup_digital_input(input_pin)
+            logging.info(f"Digital input set up on pin {input_pin}.")
 
-            # Step 3: Start reading the digital pin state
-            print("Reading digital pin states. Press 'Ctrl + C' to stop.")
+            # Step 3: Set up digital output and blink signal
+            arduino.setup_digital_output(output_pin)
+            logging.info(f"Digital output set up on pin {output_pin}. Beginning to blink signal.")
+
+            print(f"Reading digital pin {input_pin} and blinking signal on pin {output_pin}. Press 'Ctrl + C' to stop.")
             while True:
-                state_6 = arduino.read_digital(6)
-                logging.info(f"Pin 6 state: {state_6}")
-                time.sleep(1)  # Add a delay to avoid flooding the output
+                # Blink signal
+                arduino.set_digital(output_pin, True)
+                logging.info(f"Signal on pin {output_pin} set to HIGH")
+                time.sleep(1)
+
+                arduino.set_digital(output_pin, False)
+                logging.info(f"Signal on pin {output_pin} set to LOW")
+                time.sleep(1)
+
+                # Read state of digital input pin input_pin
+                state_input_pin = arduino.read_digital(6)
+                logging.info(f"Pin 6 state: {state_input_pin}")
 
         except KeyboardInterrupt:
             logging.info("Test interrupted by user.")
@@ -175,3 +187,5 @@ if __name__ == "__main__":
 
     # Run the test
     test_arduino_controller()
+
+    
