@@ -150,7 +150,7 @@ if __name__ == "__main__":
                 logging.error("Failed to initialize Arduino. Exiting test.")
                 return
 
-            # Step 2: Set up digital input pins (using pin 6 as an example)
+            # Step 2: Set up digital input pins
             arduino.setup_digital_input(input_pin)
             logging.info(f"Digital input set up on pin {input_pin}.")
 
