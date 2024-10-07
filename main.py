@@ -97,14 +97,15 @@ class Experiment:
             scale_factor=self.scale_factor
         )
         camera.initialize_cameras()
-        camera.start_grabbing()
-        logger.info("Cameras initialized and started grabbing.")
 
         # Set exposure time based on auto_exposure flag
         if not self.auto_exposure:
             # If auto_exposure is False, set the exposure time from config
             camera.set_manual_exposure(self.exposure_time)
             logger.info(f"Exposure time set to {self.exposure_time} µs.")
+
+        camera.start_grabbing()
+        logger.info("Cameras initialized and started grabbing.")
 
         return camera
 
@@ -303,12 +304,14 @@ class Experiment:
         """Re-initialize cameras after a break, ensuring exposure time remains the same."""
         logger.info("Re-initializing cameras after break.")
         self.cameras.initialize_cameras()
-        self.cameras.start_grabbing()
-        logger.info("Cameras re-initialized and started grabbing.")
 
         # Set exposure time based on previously saved exposure_time
         self.cameras.set_manual_exposure(self.exposure_time)
         logger.info(f"Exposure time set to {self.exposure_time} µs after break.")
+
+        self.cameras.start_grabbing()
+        logger.info("Cameras re-initialized and started grabbing.")
+
 
     def terminate_experiment(self):
         """Terminate the experiment and generate the report."""
