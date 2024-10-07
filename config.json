@@ -19,7 +19,7 @@
             "DO_CAPTURE": 7
         },
         "output_pins": {
-            "DI_START": 2,
+            "DI_RUN": 2,
             "DI_CAPTURE_COMPLETE": 3
         }
     }
