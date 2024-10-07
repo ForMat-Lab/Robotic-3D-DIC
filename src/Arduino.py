@@ -141,7 +141,7 @@ if __name__ == "__main__":
     def test_arduino_controller(input_pin = 6, output_pin = 2):
         """
         A test function to initialize the ArduinoController, set up digital input and output pins,
-        read their states, and blink an LED on pin 10.
+        read their states, and blink an signal on pin {output_pin}.
         """
         try:
             # Step 1: Initialize the ArduinoController (with auto-detect port)
@@ -154,19 +154,19 @@ if __name__ == "__main__":
             arduino.setup_digital_input(input_pin)
             logging.info(f"Digital input set up on pin {input_pin}.")
 
-            # Step 3: Set up digital output on pin 10 and blink LED
+            # Step 3: Set up digital output and blink signal
             arduino.setup_digital_output(output_pin)
-            logging.info(f"Digital output set up on pin {output_pin}. Beginning to blink LED.")
+            logging.info(f"Digital output set up on pin {output_pin}. Beginning to blink signal.")
 
-            print(f"Reading digital pin {input_pin} and blinking LED on pin {output_pin}. Press 'Ctrl + C' to stop.")
+            print(f"Reading digital pin {input_pin} and blinking signal on pin {output_pin}. Press 'Ctrl + C' to stop.")
             while True:
-                # Blink LED on pin 10
+                # Blink signal
                 arduino.set_digital(output_pin, True)
-                logging.info("LED on pin 10 set to HIGH")
+                logging.info("Signal on pin {output_pin} set to HIGH")
                 time.sleep(1)
 
                 arduino.set_digital(output_pin, False)
-                logging.info("LED on pin 10 set to LOW")
+                logging.info("Signal on pin {output_pin} set to LOW")
                 time.sleep(1)
 
                 # Read state of digital input pin input_pin
