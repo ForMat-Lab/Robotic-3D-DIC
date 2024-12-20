@@ -40,7 +40,7 @@ class Experiment:
 
         # Load configuration parameters
         self.config = config
-        self.exposure_time = config['camera_settings'].get('exposure_time', None)
+        self.exposure_time = config['camera_settings'].get('exposure_time')
         # Exposure_mode can be Manual, SetOnce, Continuous
         self.exposure_mode = config['camera_settings'].get('exposure_mode', 'Manual')
         
