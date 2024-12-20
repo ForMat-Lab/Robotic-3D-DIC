@@ -265,13 +265,9 @@ class Experiment:
                 self.cameras.set_manual_exposure(self.sample_exposures[sample_index])
 
         elif self.exposure_mode == 'Manual':
-            # If manual and exposure_time is None, set it now from config
-            if self.exposure_time is None:
-                self.cameras.set_manual_exposure(self.exposure_time)
-                logger.info(f"Manual mode: Exposure time set to {self.exposure_time} µs.")
-
+            self.cameras.set_manual_exposure(self.exposure_time)
+            logger.info(f"Manual mode: Exposure time set to {self.exposure_time} µs.")
         elif self.exposure_mode == 'Continuous':
-            # Continuous adapts automatically
             pass
 
         # Capture and save images
