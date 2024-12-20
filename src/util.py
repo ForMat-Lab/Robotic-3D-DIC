@@ -34,16 +34,114 @@ def load_config(config_file="config.json"):
     logger.info(f"Configuration loaded from {config_file}.")
     return config
 
-def get_folder_size(folder_path):
+def validate_config(config):
     """
-    Calculate the total size of the output folder.
+    Validates the configuration dictionary to ensure all required parameters are present
+    and have the correct data types.
+
+    Args:
+        config (dict): The configuration dictionary to validate.
+
+    Raises:
+        ValueError: If any required configuration key is missing or has an incorrect type.
     """
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(folder_path):
-        for filename in filenames:
-            filepath = os.path.join(dirpath, filename)
-            total_size += os.path.getsize(filepath)
-    return total_size
+    # Define required top-level keys and their expected types
+    required_top_level_keys = {
+        'camera_settings': dict,
+        'arduino_settings': dict,
+        'number_of_samples': int,
+        'output_folder': str,
+        'experiment_name': str
+    }
+
+    # Check for required top-level keys
+    for key, expected_type in required_top_level_keys.items():
+        if key not in config:
+            raise ValueError(f"Missing required configuration key: '{key}'")
+        if not isinstance(config[key], expected_type):
+            raise ValueError(f"Configuration key '{key}' must be of type {expected_type.__name__}")
+
+    # Validate 'camera_settings'
+    camera_settings = config['camera_settings']
+    required_camera_keys = {
+        'exposure_time': (int, float),
+        'width': int,
+        'height': int
+    }
+    for key, expected_type in required_camera_keys.items():
+        if key not in camera_settings:
+            raise ValueError(f"Missing required camera setting: '{key}'")
+        if not isinstance(camera_settings[key], expected_type):
+            raise ValueError(f"Camera setting '{key}' must be of type {expected_type if isinstance(expected_type, tuple) else expected_type.__name__}")
+
+    # Validate 'exposure_mode' if present
+    exposure_mode = camera_settings.get('exposure_mode', 'Manual')
+    if exposure_mode not in ['Manual', 'SetOnce', 'Continuous']:
+        raise ValueError("Invalid 'exposure_mode'. Must be one of 'Manual', 'SetOnce', or 'Continuous'.")
+
+    # If 'exposure_mode' is 'Manual', ensure 'exposure_time' is provided and valid
+    if exposure_mode == 'Manual':
+        if camera_settings['exposure_time'] is None:
+            raise ValueError("'exposure_time' must be provided for 'Manual' exposure_mode.")
+
+    # Validate 'arduino_settings'
+    arduino_settings = config['arduino_settings']
+    required_arduino_keys = {
+        'input_pins': dict,
+        'output_pins': dict
+    }
+    for key, expected_type in required_arduino_keys.items():
+        if key not in arduino_settings:
+            raise ValueError(f"Missing required arduino setting: '{key}'")
+        if not isinstance(arduino_settings[key], expected_type):
+            raise ValueError(f"Arduino setting '{key}' must be of type {expected_type.__name__}")
+
+    # Validate Arduino input pins
+    required_input_pins = ['DO_CAPTURE', 'DO_RUN_COMPLETE']
+    for pin in required_input_pins:
+        if pin not in arduino_settings['input_pins']:
+            raise ValueError(f"Missing required Arduino input pin: '{pin}'")
+        if not isinstance(arduino_settings['input_pins'][pin], int):
+            raise ValueError(f"Arduino input pin '{pin}' must be of type int")
+
+    # Validate Arduino output pins
+    required_output_pins = ['DI_RUN', 'DI_CAPTURE_COMPLETE']
+    for pin in required_output_pins:
+        if pin not in arduino_settings['output_pins']:
+            raise ValueError(f"Missing required Arduino output pin: '{pin}'")
+        if not isinstance(arduino_settings['output_pins'][pin], int):
+            raise ValueError(f"Arduino output pin '{pin}' must be of type int")
+
+    # Validate optional Arduino settings
+    if not isinstance(arduino_settings.get('auto_detect_port', False), bool):
+        raise ValueError("'auto_detect_port' in arduino_settings must be of type bool")
+
+    # If 'auto_detect_port' is False, ensure 'port' is provided and valid
+    if not arduino_settings.get('auto_detect_port', False):
+        if 'port' not in arduino_settings:
+            raise ValueError("'port' must be specified in arduino_settings when 'auto_detect_port' is False")
+        if not isinstance(arduino_settings['port'], str):
+            raise ValueError("'port' in arduino_settings must be of type str")
+
+    # Validate 'number_of_samples'
+    if config['number_of_samples'] <= 0:
+        raise ValueError("'number_of_samples' must be a positive integer")
+
+    # Validate 'interval_minutes'
+    if not isinstance(config.get('interval_minutes', 30), int) or config.get('interval_minutes', 30) <= 0:
+        raise ValueError("'interval_minutes' must be a positive integer")
+
+    # Validate 'total_runs'
+    if not isinstance(config.get('total_runs', -1), int):
+        raise ValueError("'total_runs' must be an integer")
+
+    # Validate 'display_scale_factor'
+    if not isinstance(config.get('display_scale_factor', 0.5), (int, float)):
+        raise ValueError("'display_scale_factor' must be a float or int")
+
+    # Validate 'display_images'
+    if not isinstance(config.get('display_images', True), bool):
+        raise ValueError("'display_images' must be of type bool")
 
 def generate_pdf_report(
     config, start_time, end_time,
