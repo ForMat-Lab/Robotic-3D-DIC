@@ -5,12 +5,13 @@
     "total_runs": -1,
     "output_folder": "captured_images",
     "display_scale_factor": 0.25,
+    "display_images": true,
     "camera_settings": {
         "width": 2448,
         "height": 2048,
         "exposure_time": 100000,
-        "auto_exposure": true
-    },
+        "exposure_mode": "SetOnce" 
+},
     "arduino_settings": {
         "port": "COM3",
         "auto_detect_port": true,
