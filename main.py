@@ -264,12 +264,6 @@ class Experiment:
                 # Use known exposure
                 self.cameras.set_manual_exposure(self.sample_exposures[sample_index])
 
-        elif self.exposure_mode == 'Manual':
-            self.cameras.set_manual_exposure(self.exposure_time)
-            logger.info(f"Manual mode: Exposure time set to {self.exposure_time} µs.")
-        elif self.exposure_mode == 'Continuous':
-            pass
-
         # Capture and save images
         frames = self.cameras.grab_frames()
         if len(frames) > 0:
