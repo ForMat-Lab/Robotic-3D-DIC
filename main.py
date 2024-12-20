@@ -3,8 +3,9 @@ import time
 import cv2
 import numpy as np
 import logging
+import csv
 from datetime import datetime, timedelta
-from src.util import load_config, generate_pdf_report, get_folder_size
+from src.util import load_config, validate_config, generate_pdf_report
 from src.Arduino import ArduinoController
 from src.Camera import Camera
 
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 class Experiment:
     def __init__(self, config):
-
+        # Print header
         self._header = r'''
 8""8""8                   8"""8                     eeee  8""""8      8""""8 8  8""""8 
 8  8  8 e    e eeee eeeee 8   8  eeeee eeeee  eeeee    8  8    8      8    8 8  8    " 
@@ -37,39 +38,65 @@ class Experiment:
 '''
         print(self._header)
 
+        # Load configuration parameters
         self.config = config
-        self.exposure_time = config['camera_settings']['exposure_time']
-        self.auto_exposure = config['camera_settings'].get('auto_exposure', False)
-        self.exposure_set = False  # Flag to indicate if exposure has been set after auto-exposure
+        self.exposure_time = config['camera_settings'].get('exposure_time', None)
+        # Exposure_mode can be Manual, SetOnce, Continuous
+        self.exposure_mode = config['camera_settings'].get('exposure_mode', 'Manual')
+        
+        # For SetOnce mode, keep a per-sample exposure array
+        self.sample_exposures = [None] * config['number_of_samples']
+        self.exposure_lookup_path = None
+        
+        self.scale_factor = config.get('display_scale_factor', 0.5)
+        self.display_images = config.get('display_images', True)
 
         # Pin configurations
         arduino_input_pins = config['arduino_settings']['input_pins']
         arduino_output_pins = config['arduino_settings']['output_pins']
         self.DO_CAPTURE_pin = arduino_input_pins['DO_CAPTURE']
-        self.DO_RUN_COMPLETE_pin = arduino_input_pins['DO_RUN_COMPLETE']  # New pin for run completion signal
+        self.DO_RUN_COMPLETE_pin = arduino_input_pins['DO_RUN_COMPLETE']
         self.DI_RUN_pin = arduino_output_pins['DI_RUN']
         self.DI_CAPTURE_COMPLETE_pin = arduino_output_pins['DI_CAPTURE_COMPLETE']
 
         # Experiment parameters
         self.num_samples = config['number_of_samples']
         self.interval_minutes = config.get('interval_minutes', 30)
-        self.total_runs = config.get('total_runs', -1)  # -1 for infinite runs
-        self.scale_factor = config.get('scale_factor', 0.5)
-        self.visit_counts = [0] * self.config['number_of_samples']
+        self.total_runs = config.get('total_runs', -1)  # -1 for infinite
+        self.visit_counts = [0] * self.num_samples
         self.start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         self.run_count = 0
 
         self.auto_detect_port = self.config['arduino_settings'].get('auto_detect_port', False)
         self.arduino_port = None if self.auto_detect_port else config['arduino_settings']['port']
 
+        # Initialize Arduino and cameras
         self.arduino = self.initialize_arduino()
         self.cameras = self.initialize_cameras()
         
-        # Create sample folders at the beginning
+        # Create output folders for experiment data
         self.output_base_folder = self.setup_output_folder()
         self.create_sample_folders()
 
+        # CSV logging:
+        # - One main CSV file for logging captures: <experiment_name>.csv in the experiment folder
+        experiment_csv_name = f"{self.config['experiment_name']}.csv"
+        self.csv_log_path = os.path.join(self.output_base_folder, experiment_csv_name)
 
+        # For SetOnce mode, an exposure lookup file to remember exposures across runs
+        if self.exposure_mode == 'SetOnce':
+            self.exposure_lookup_path = os.path.join(self.output_base_folder, "exposure_lookup.csv")
+            self.load_exposure_lookup()  # Attempt to load previously known exposures
+
+        # Initialize the CSV file for experiment logging
+        self.csv_file = open(self.csv_log_path, 'a', newline='', encoding='utf-8')
+        self.csv_writer = csv.writer(self.csv_file)
+        if os.path.getsize(self.csv_log_path) == 0:
+            # Write CSV header if file is empty
+            self.csv_writer.writerow(["run_count", "sample_index", "camera_id", "exposure_time", "unix_timestamp", "filename"])
+            self.csv_file.flush()
+
+    
     def initialize_arduino(self):
         """Initialize Arduino based on the configuration."""
         arduino_controller = ArduinoController(port=self.arduino_port)
@@ -90,27 +117,37 @@ class Experiment:
 
     def initialize_cameras(self):
         """Initialize and configure cameras based on the configuration."""
-        camera = Camera(
-            width=self.config['camera_settings']['width'],
-            height=self.config['camera_settings']['height'],
-            exposure_time=self.exposure_time,
-            scale_factor=self.scale_factor
-        )
-        camera.initialize_cameras()
+        try:
+            camera = Camera(
+                width=self.config['camera_settings']['width'],
+                height=self.config['camera_settings']['height'],
+                exposure_time=self.exposure_time,
+                scale_factor=self.scale_factor
+            )
+            camera.initialize_cameras()
 
-        # Set exposure time based on auto_exposure flag
-        if not self.auto_exposure:
-            # If auto_exposure is False, set the exposure time from config
-            camera.set_manual_exposure(self.exposure_time)
-            logger.info(f"Exposure time set to {self.exposure_time} µs.")
-
-        camera.start_grabbing()
-        logger.info("Cameras initialized and started grabbing.")
-
-        return camera
+            if self.exposure_mode == 'Manual':
+                # Manual: Fixed exposure from config
+                camera.set_manual_exposure(self.exposure_time)
+                logger.info(f"Manual mode: Exposure time set to {self.exposure_time} µs.")
+            elif self.exposure_mode == 'Continuous':
+                # Continuous: auto-exposure continuously adapts
+                camera.set_auto_exposure('Continuous')
+                logger.info("Continuous mode: Auto-exposure enabled continuously.")
+            elif self.exposure_mode == 'SetOnce':
+                # SetOnce: exposure determined per sample capture if not known; no action here
+                pass
+        
+            camera.start_grabbing()
+            logger.info("Cameras initialized and started grabbing.")
+            return camera
+        except Exception as e:
+            logger.error(f"Failed to initialize cameras: {e}")
+            self.cleanup()
+            raise
 
     def setup_output_folder(self):
-        """Set up the base output folder for the experiment."""
+        """Set up the base output directory for the experiment."""
         output_base_folder = os.path.join(
             self.config['output_folder'],
             self.start_time,
@@ -121,7 +158,7 @@ class Experiment:
         return output_base_folder
 
     def create_sample_folders(self):
-        """Create sample folders at the beginning of the experiment."""
+        """Create one folder per sample at the start of the experiment."""
         self.sample_folders = [
             os.path.join(self.output_base_folder, f'Sample_{i}')
             for i in range(self.num_samples)
@@ -131,26 +168,27 @@ class Experiment:
             logger.info(f"Sample folder created at {folder}")
 
     def run(self):
-        """Run the experiment."""
-        # User confirmation before starting the experiment
+        """Main loop to run the experiment according to the configured parameters."""
+        # User confirmation
         while True:
             user_input = input("Type 'start' to begin the experiment or 'quit' to exit: ")
             if user_input.strip().lower() == 'start':
-                logger.info("Experiment started.")
-                logger.info("You can exit the experiment at any time by pressing Ctrl+C.")
+                logger.info("Experiment started. Press Ctrl+C anytime to interrupt.")
                 break
             elif user_input.strip().lower() == 'quit':
                 logger.info("Experiment aborted by user.")
                 self.cleanup()
                 return
+
         try:
             while self.total_runs == -1 or self.run_count < self.total_runs:
                 logger.info(f"Starting run {self.run_count}")
                 self.execute_run()
-                self.run_count += 1  # Increment actual run count
+                self.run_count += 1
                 if self.total_runs != -1 and self.run_count >= self.total_runs:
                     break
                 self.enter_break()
+
             self.terminate_experiment()
         except KeyboardInterrupt:
             logger.info("Experiment interrupted by user.")
@@ -162,22 +200,30 @@ class Experiment:
             self.cleanup()
 
     def execute_run(self):
-        """Execute the image capture for the current run."""
-        # Signal the robot to start
+        """Perform one complete run of image captures for all samples."""
+        # Signal the robot to start the run
         logger.info(f"Run {self.run_count}: Signaling robot to start the run.")
         self.arduino.set_digital(self.DI_RUN_pin, True)
 
         sample_index = 0
-        # Wait for the robot to signal run completion
+        exposures_updated = False  # Track if we updated any exposures this run (SetOnce mode)
+
+        # Wait for signals from the robot for captures and run completion
         while True:
             print("Waiting for capture signal.", end='\r')
             if self.arduino.check_rising_edge(self.DO_CAPTURE_pin):
-                # Robot signals it's ready to capture
-                self.handle_capture_signal(sample_index)
+                if sample_index >= self.num_samples:
+                    logger.warning(f"Run {self.run_count}: Received more capture signals than the number of samples ({self.num_samples}). Ignoring extra signals.")
+                    continue
+                # Robot ready for capture
+                updated = self.handle_capture_signal(sample_index)
+                if updated:
+                    exposures_updated = True
                 sample_index += 1
+
             if self.arduino.read_digital(self.DO_RUN_COMPLETE_pin):
-                # Robot signals the run is complete
-                logger.info(f"Run {self.run_count}: Robot has signaled run completion.")
+                # Robot signals run complete
+                logger.info(f"Run {self.run_count}: Robot signaled run completion.")
                 break
 
             key = cv2.waitKey(1) & 0xFF
@@ -185,59 +231,68 @@ class Experiment:
                 logger.info("Experiment interrupted by user.")
                 raise KeyboardInterrupt
 
-            time.sleep(0.01)  # Small delay to prevent high CPU usage
+            time.sleep(0.01)
 
-        # Reset DI_START to LOW to prepare for next run
+        # If SetOnce mode and exposures were updated, save them
+        if self.exposure_mode == 'SetOnce' and exposures_updated:
+            self.save_exposure_lookup()
+
+        # Reset DI_RUN to LOW for next run
         self.arduino.set_digital(self.DI_RUN_pin, False)
         logger.info(f"Run {self.run_count} execution completed, with {sample_index} captures.")
 
-    def handle_capture_signal(self, sample_index):
-        """Handle the capture signal from the robot."""
+    def handle_capture_signal(self, sample_index, delay=1):
+        """Handle the robot's capture signal by capturing and saving images with proper exposure.
 
+        Returns True if any exposure was newly set (in SetOnce mode), False otherwise.
+        """
         logger.info(f"Run {self.run_count}, Sample {sample_index}: Capture signal received.")
 
-        # Set exposure on first capture if not already set
-        if not self.exposure_set:
-            self.set_exposure()
+        exposure_changed = False
 
-        # Capture images
-        self.capture_images(sample_index)
+        # Set exposure based on exposure_mode
+        if self.exposure_mode == 'SetOnce':
+            # If exposure unknown for this sample, auto-expose once
+            if self.sample_exposures[sample_index] is None:
+                logger.info(f"SetOnce mode: Auto-exposing for Sample {sample_index}.")
+                detected_exposure = self.cameras.set_auto_exposure('Once')
+                self.sample_exposures[sample_index] = detected_exposure
+                self.cameras.set_manual_exposure(detected_exposure)
+                logger.info(f"SetOnce mode: Exposure for Sample {sample_index} set to {detected_exposure} µs.")
+                exposure_changed = True
+            else:
+                # Use known exposure
+                self.cameras.set_manual_exposure(self.sample_exposures[sample_index])
+
+        elif self.exposure_mode == 'Manual':
+            # If manual and exposure_time is None, set it now from config
+            if self.exposure_time is None:
+                self.cameras.set_manual_exposure(self.exposure_time)
+                logger.info(f"Manual mode: Exposure time set to {self.exposure_time} µs.")
+
+        elif self.exposure_mode == 'Continuous':
+            # Continuous adapts automatically
+            pass
+
+        # Capture and save images
+        frames = self.cameras.grab_frames()
+        if len(frames) > 0:
+            filenames = self.save_images(frames, sample_index)
+            self.log_capture_info(filenames, sample_index)
+            logger.info(f"Run {self.run_count}, Sample {sample_index}: Images captured and logged.")
+        else:
+            logger.error(f"Run {self.run_count}, Sample {sample_index}: Failed to capture images.")
 
         # Signal robot that capture is complete
         logger.info("Signaling robot that capture is complete.")
         self.arduino.set_digital(self.DI_CAPTURE_COMPLETE_pin, True)
-
-        # Wait briefly to ensure robot receives the signal
-        time.sleep(1)
-
-        # Reset DI_CAPTURE_COMPLETE to LOW
+        time.sleep(delay)
         self.arduino.set_digital(self.DI_CAPTURE_COMPLETE_pin, False)
 
-    def set_exposure(self):
-        """Set the exposure for cameras based on configuration or auto-detection."""
-        if self.auto_exposure:
-            # Perform auto-exposure
-            logger.info("Performing auto-exposure.")
-            self.exposure_time = self.cameras.set_auto_exposure('Once')
-            logger.info(f"Auto-detected exposure time: {self.exposure_time} µs")
-            # Set manual exposure to the detected value
-            self.cameras.set_manual_exposure(self.exposure_time)
-        else:
-            # Use the user-set exposure time from config
-            self.cameras.set_manual_exposure(self.exposure_time)
-        self.exposure_set = True  # Exposure has been set
-
-    def capture_images(self, sample_index):
-        """Capture images for the current sample."""
-        frames = self.cameras.grab_frames()
-        if frames:
-            self.save_images(frames, sample_index)
-            logger.info(f"Run {self.run_count}, Sample {sample_index}: Images captured.")
-        else:
-            logger.error(f"Run {self.run_count}, Sample {sample_index}: Failed to capture images.")
+        return exposure_changed
 
     def save_images(self, frames, sample_index):
-        """Save the captured frames to the sample folder."""
+        """Save captured frames to disk and display them."""
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         visit_count_str = f'{self.visit_counts[sample_index]:04}'
 
@@ -251,25 +306,45 @@ class Experiment:
             filenames.append(filepath)
             logger.info(f"Run {self.run_count}, Sample {sample_index}: Saved image {filename}")
 
-        self.visit_counts[sample_index] += 1  # Increment visit count
+        self.visit_counts[sample_index] += 1
 
         # Display images
-        self.display_images(frames)
+        if self.display_images:
+            self.show_frames(frames)
+        
+        return filenames
 
-    def display_images(self, frames):
-        """Display the images side by side after scaling down."""
+    def show_frames(self, frames, delay=1):
+        """Display the captured images side-by-side in a window, scaled down."""
         resized_frames = [
             cv2.resize(frame, (0, 0), fx=self.scale_factor, fy=self.scale_factor)
             for frame in frames
         ]
         combined_image = np.hstack(resized_frames)
         cv2.imshow('Combined Image', combined_image)
-        cv2.waitKey(1)  # Display the image briefly
+        cv2.waitKey(delay)
 
-    def enter_break(self):
-        """Enter a break period between runs."""
+    def log_capture_info(self, filenames, sample_index):
+        """Log capture info (run, sample, camera, exposure, timestamp, filename) into the CSV file."""
+        for idx, filename in enumerate(filenames):
+            camera_obj = self.cameras.cameras[idx]
+            camera_id = idx
+            exposure_val = camera_obj.ExposureTime.GetValue()
+            unix_timestamp = int(time.time())
+            self.csv_writer.writerow([
+                self.run_count,
+                sample_index,
+                camera_id,
+                exposure_val,
+                unix_timestamp,
+                filename
+            ])
+        self.csv_file.flush()
+
+    def enter_break(self, delay=1):
+        """Enter a break period between runs, closing cameras and pausing for interval_minutes."""
         logger.info(f"Entering break period of {self.interval_minutes} minutes.")
-        logger.info(f"Closing cameras and cleaning up signals.")
+        logger.info("Closing cameras and cleaning up signals.")
         self.cameras.close_cameras()
         self.arduino.set_digital(self.DI_RUN_pin, False)  # Ensure DI_START is LOW
 
@@ -290,31 +365,38 @@ class Experiment:
                 mins, secs = divmod(int(remaining), 60)
                 time_format = f'{mins:02d}:{secs:02d}'
                 print(f'Break time remaining: {time_format}', end='\r')
-                time.sleep(1)
+                time.sleep(delay)
         except KeyboardInterrupt:
             logger.info("Experiment interrupted by user during break.")
+            self.terminate_experiment()
+            self.cleanup()
             raise
 
-        print('\n')  # Move to next line after break
+        print('\n')
 
         # Re-initialize cameras after break
         self.reinitialize_cameras()
 
     def reinitialize_cameras(self):
-        """Re-initialize cameras after a break, ensuring exposure time remains the same."""
+        """Re-initialize cameras after break, applying the same exposure mode as before."""
         logger.info("Re-initializing cameras after break.")
         self.cameras.initialize_cameras()
 
-        # Set exposure time based on previously saved exposure_time
-        self.cameras.set_manual_exposure(self.exposure_time)
-        logger.info(f"Exposure time set to {self.exposure_time} µs after break.")
-
+        # Reapply mode settings
+        if self.exposure_mode == 'Manual':
+            self.cameras.set_manual_exposure(self.exposure_time)
+            logger.info(f"Manual mode after break: Exposure time set to {self.exposure_time} µs.")
+        elif self.exposure_mode == 'Continuous':
+            self.cameras.set_auto_exposure('Continuous')
+            logger.info("Continuous mode after break: Auto-exposure re-enabled.")
+        elif self.exposure_mode == 'SetOnce':
+            # SetOnce exposures will be set at capture time if unknown, or from known values
+            pass        
         self.cameras.start_grabbing()
         logger.info("Cameras re-initialized and started grabbing.")
 
-
     def terminate_experiment(self):
-        """Terminate the experiment and generate the report."""
+        """Terminate the experiment, generate a PDF report, and summarize results."""
         end_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         total_samples_collected = sum(self.visit_counts)
         generate_pdf_report(
@@ -322,21 +404,54 @@ class Experiment:
             self.run_count, total_samples_collected,
             self.visit_counts, self.output_base_folder
         )
+        logger.info("Experiment terminated. Report generated.")
 
     def cleanup(self):
-        """Clean up resources."""
+        """Release all resources (Arduino, Cameras, Windows, Files)."""
         if hasattr(self, 'arduino') and self.arduino:
             self.arduino.close()
             logger.info("Arduino connection closed.")
         if hasattr(self, 'cameras') and self.cameras:
             self.cameras.close_cameras()
             logger.info("Cameras closed.")
+        if hasattr(self, 'csv_file') and self.csv_file and not self.csv_file.closed:
+            self.csv_file.close()
+            logger.info("CSV file closed.")
         cv2.destroyAllWindows()
-        logger.info("Resources released.")
+        logger.info("Resources released. Cleanup complete.")
 
     def run_experiment(self):
-        """Main method to run the experiment."""
+        """Convenience method to start the experiment run loop."""
         self.run()
+
+    def load_exposure_lookup(self):
+        """If SetOnce mode: Load previously known exposures from CSV if it exists."""
+        if self.exposure_mode != 'SetOnce' or not self.exposure_lookup_path:
+            return
+        if not os.path.exists(self.exposure_lookup_path):
+            logger.info("No existing exposure lookup found. Will determine exposures as needed.")
+            return
+        try:
+            with open(self.exposure_lookup_path, 'r', newline='') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    idx = int(row['sample_index'])
+                    val = row['exposure_time']
+                    self.sample_exposures[idx] = float(val) if val.lower() != "none" else None
+            logger.info("Exposure lookup loaded for SetOnce mode.")
+        except Exception as e:
+            logger.error(f"Failed to load exposure lookup: {e}")
+
+    def save_exposure_lookup(self):
+        """Save the current set of exposures to the lookup file for future runs (SetOnce mode)."""
+        if self.exposure_mode != 'SetOnce' or not self.exposure_lookup_path:
+            return
+        with open(self.exposure_lookup_path, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['sample_index', 'exposure_time'])
+            for i, exp in enumerate(self.sample_exposures):
+                writer.writerow([i, exp if exp is not None else "None"])
+        logger.info("Exposure lookup updated/saved for SetOnce mode.")
 
 
 def main():
@@ -347,10 +462,16 @@ def main():
             logger.error("Failed to load configuration.")
             return
 
+        # Validate configuration
+        validate_config(config)
+        logger.info("Configuration validation successful.")
+
         # Run the experiment
         experiment = Experiment(config)
         experiment.run_experiment()
 
+    except ValueError as ve:
+        logger.error(f"Configuration Error: {ve}")
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
         # Ensure cleanup in case of an exception
