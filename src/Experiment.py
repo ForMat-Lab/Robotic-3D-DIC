@@ -132,14 +132,14 @@ class Experiment:
         # Configure input pins
         input_pins = self.config['arduino_settings']['input_pins']
         for name, pin in input_pins.items():
-            arduino_controller.setup_digital_input(pin)
             logger.info(f"Arduino input pin set up: {name} on pin {pin}")
+            arduino_controller.setup_digital_input(pin)
 
         # Configure output pins
         output_pins = self.config['arduino_settings']['output_pins']
         for name, pin in output_pins.items():
-            arduino_controller.setup_digital_output(pin)
             logger.info(f"Arduino output pin set up: {name} on pin {pin}")
+            arduino_controller.setup_digital_output(pin)
 
         return arduino_controller
 
