@@ -2,13 +2,27 @@ import cv2
 from pypylon import pylon
 import logging
 
+logger = logging.getLogger(__name__)
+
 class Camera:
+    """
+    A class to manage one or more Basler cameras via the pypylon library.
+    Handles configuration of exposure times, image grabbing, etc.
+    """
+
     def __init__(
         self, width=2448, height=2048, exposure_time=5000,
         timeout=5000, scale_factor=0.5
     ):
         """
         Initialize the camera controller with configurable parameters.
+
+        Args:
+            width (int): Desired camera capture width.
+            height (int): Desired camera capture height.
+            exposure_time (int|float): Initial/manual exposure time (µs).
+            timeout (int): Timeout for capturing frames (ms).
+            scale_factor (float): Factor to scale frames for display.
         """
         self.width = width
         self.height = height
@@ -19,73 +33,91 @@ class Camera:
 
     def initialize_cameras(self):
         """
-        Initialize and open all available cameras.
+        Initialize and open all available Basler cameras.
+        After opening, set the default width, height, and exposure time.
         """
+        devices = pylon.TlFactory.GetInstance().EnumerateDevices()
         self.cameras = [
             pylon.InstantCamera(pylon.TlFactory.GetInstance().CreateDevice(device))
-            for device in pylon.TlFactory.GetInstance().EnumerateDevices()
+            for device in devices
         ]
         for camera in self.cameras:
             camera.Open()
-        logging.info("All cameras initialized and opened.")
+            camera.Width.SetValue(self.width)
+            camera.Height.SetValue(self.height)
+            camera.ExposureTime.SetValue(self.exposure_time)
+        logger.info("All cameras initialized, opened, and default settings applied.")
 
     def start_grabbing(self):
         """
-        Start grabbing for all initialized cameras.
+        Start grabbing for all initialized cameras using the LatestImageOnly strategy.
         """
         for camera in self.cameras:
             if not camera.IsGrabbing():
                 camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
-        logging.info("All cameras started grabbing.")
-
-    def set_camera_settings(self):
-        """
-        Set the width, height, and exposure time for all cameras.
-        """
-        for camera in self.cameras:
-            camera.Width.SetValue(self.width)
-            camera.Height.SetValue(self.height)
-            camera.ExposureTime.SetValue(self.exposure_time)
-        logging.info(
-            f"Camera settings applied. Width: {self.width}, "
-            f"Height: {self.height}, Exposure Time: {self.exposure_time} µs."
-        )
+        logger.info("All cameras started grabbing.")
 
     def set_auto_exposure(self, mode='Once'):
         """
         Enable auto exposure for all initialized cameras.
+        Typically used with 'Once' or 'Continuous'.
+
+        Args:
+            mode (str): 'Once' or 'Continuous' for auto exposure modes.
+
+        Returns:
+            int or float: The average exposure time set by the cameras, 
+                          or the manual exposure if auto fails.
         """
+        if not self.cameras:
+            logger.error("No cameras available to set auto exposure.")
+            return self.exposure_time
+
         exposure_times = []
         for camera in self.cameras:
             try:
-                camera.ExposureAuto.SetValue(mode)  # Set the auto-exposure mode
-                logging.info(
-                    f"Auto-exposure {mode} enabled for camera: "
+                camera.ExposureAuto.SetValue(mode)
+                logger.info(
+                    f"Auto-exposure '{mode}' enabled for camera: "
                     f"{camera.GetDeviceInfo().GetModelName()}"
                 )
+                # The actual exposure time might not instantly match, but let's read it
                 exposure_time = camera.ExposureTime.GetValue()
                 exposure_times.append(exposure_time)
-                logging.info(f"Current exposure time: {exposure_time} µs")
+                logger.debug(
+                    f"Camera {camera.GetDeviceInfo().GetModelName()} current exposure: {exposure_time} µs"
+                )
             except Exception as e:
-                logging.error(
+                logger.error(
                     f"Failed to enable auto-exposure for camera "
                     f"{camera.GetDeviceInfo().GetModelName()}: {e}"
                 )
-        return sum(exposure_times) // len(exposure_times)
+        if exposure_times:
+            average_exp = sum(exposure_times) / len(exposure_times)
+            return int(average_exp)
+        return self.exposure_time
+
     def set_manual_exposure(self, exposure_time):
         """
-        Set a manual exposure time for all initialized cameras.
+        Disable auto-exposure and set a manual exposure time (µs) for all cameras.
+
+        Args:
+            exposure_time (int|float): Desired manual exposure time in microseconds.
         """
+        if not self.cameras:
+            logger.error("No cameras available to set manual exposure.")
+            return
+
         for camera in self.cameras:
             try:
-                camera.ExposureAuto.SetValue('Off')  # Turn off auto-exposure
-                camera.ExposureTime.SetValue(exposure_time)  # Set manual exposure time
-                logging.info(
-                    f"Manual exposure time set to {exposure_time} µs for camera: "
+                camera.ExposureAuto.SetValue('Off')
+                camera.ExposureTime.SetValue(exposure_time)
+                logger.info(
+                    f"Manual exposure set to {exposure_time} µs for camera: "
                     f"{camera.GetDeviceInfo().GetModelName()}"
                 )
             except Exception as e:
-                logging.error(
+                logger.error(
                     f"Failed to set manual exposure for camera "
                     f"{camera.GetDeviceInfo().GetModelName()}: {e}"
                 )
@@ -93,39 +125,44 @@ class Camera:
     def grab_frames(self):
         """
         Grab frames from all the initialized cameras.
-        :return: List of frames.
+
+        Returns:
+            list of np.ndarray: The captured frames (one per camera).
         """
         frames = []
+        if not self.cameras:
+            logger.warning("No cameras available to grab frames.")
+            return frames
+
         for camera in self.cameras:
             if camera.IsGrabbing():
-                grab_result = camera.RetrieveResult(
-                    self.timeout, pylon.TimeoutHandling_ThrowException
-                )
-                if grab_result.GrabSucceeded():
-                    frames.append(grab_result.Array)
-                else:
-                    logging.error(
-                        f"Failed to grab frame from camera: "
-                        f"{camera.GetDeviceInfo().GetModelName()}"
+                try:
+                    grab_result = camera.RetrieveResult(
+                        self.timeout, pylon.TimeoutHandling_ThrowException
                     )
-                grab_result.Release()
+                    if grab_result.GrabSucceeded():
+                        frames.append(grab_result.Array)
+                    else:
+                        logger.error(
+                            f"Failed to grab frame from camera: "
+                            f"{camera.GetDeviceInfo().GetModelName()}"
+                        )
+                    grab_result.Release()
+                except Exception as e:
+                    logger.error(
+                        f"Exception while grabbing frame from camera "
+                        f"{camera.GetDeviceInfo().GetModelName()}: {e}"
+                    )
             else:
-                logging.error("Camera is not grabbing frames.")
+                logger.error(
+                    f"Camera {camera.GetDeviceInfo().GetModelName()} "
+                    "is not grabbing."
+                )
         return frames
-    
-    def display_frames(self, frames):
-        """
-        Display frames concatenated in a single CV2 window.
-        :param frames: The list of frames to display.
-        """
-        if frames:
-            resized_frames = [cv2.resize(frame, (0, 0), fx=self.scale_factor, fy=self.scale_factor) for frame in frames]
-            concatenated_frame = cv2.hconcat(resized_frames)
-            cv2.imshow('Captured Images', concatenated_frame)
 
     def close_cameras(self):
         """
-        Stop grabbing and close all cameras.
+        Stop grabbing and close all cameras, then release any OpenCV windows.
         """
         for camera in self.cameras:
             if camera.IsGrabbing():
@@ -133,7 +170,7 @@ class Camera:
             if camera.IsOpen():
                 camera.Close()
         cv2.destroyAllWindows()
-        logging.info("All cameras closed.")
+        logger.info("All cameras closed.")
 
 # Unit test for the Camera class
 if __name__ == "__main__":
