@@ -1,4 +1,3 @@
-# ./main.py
 """
 MycoRobo3d-DIC: Automated Imaging Acquisition System
 
