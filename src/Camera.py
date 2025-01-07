@@ -45,7 +45,6 @@ class Camera:
             camera.Open()
             camera.Width.SetValue(self.width)
             camera.Height.SetValue(self.height)
-            camera.ExposureTime.SetValue(self.exposure_time)
         logger.info("All cameras initialized, opened, and default settings applied.")
 
     def start_grabbing(self):
