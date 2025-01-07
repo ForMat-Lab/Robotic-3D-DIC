@@ -163,11 +163,11 @@ class Experiment:
 
             # Configure exposure mode
             if self.exposure_mode == 'Manual':
+                logger.info(f"Manual mode: Setting exposure time to {self.exposure_time} µs.")
                 camera.set_manual_exposure(self.exposure_time)
-                logger.info(f"Manual mode: Exposure time set to {self.exposure_time} µs.")
             elif self.exposure_mode == 'Continuous':
-                camera.set_auto_exposure('Continuous')
                 logger.info("Continuous mode: Auto-exposure enabled continuously.")
+                camera.set_auto_exposure('Continuous')
             elif self.exposure_mode == 'SetOnce':
                 # For 'SetOnce', we set exposure per-sample capture if unknown
                 pass
