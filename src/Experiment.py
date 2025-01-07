@@ -85,6 +85,8 @@ class Experiment:
         self.total_runs = config.get('total_runs', -1)  # -1 => infinite
         self.visit_counts = [0] * self.num_samples
         self.start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        self.run_start_time = None
+        self.next_run_start_time = None
         self.run_count = 0
 
         # Initialize Arduino and cameras
@@ -252,6 +254,8 @@ class Experiment:
         """
         logger.info(f"Run {self.run_count}: Signaling robot to start the run.")
         self.arduino.set_digital(self.DI_RUN_pin, True)
+        self.run_start_time = time.time()
+        self.next_run_start_time = self.run_start_time + self.interval_minutes * 60
 
         new_exposure_table = False
         if self.exposure_mode == 'SetOnce' and self.sample_exposures is None:
@@ -404,39 +408,68 @@ class Experiment:
             ])
         self.csv_file.flush()
 
-    def enter_break(self, delay=1):
+    def enter_break(self, delay=1, reinit_threshold=30):
         """
         Close cameras and pause between runs for a specified break interval.
+        
+        Reinitialize cameras when the remaining break time falls below `reinit_threshold` seconds.
+
+        Args:
+            delay (int): Delay in seconds between each loop iteration during the break.
+            reinit_threshold (int): Time in seconds before the end of the break to reinitialize cameras.
+                                    Defaults to 10 seconds.
         """
         logger.info(f"Entering break period of {self.interval_minutes} minutes.")
         logger.info("Closing cameras and resetting run pin.")
-        self.cameras.close_cameras()
-        self.arduino.set_digital(self.DI_RUN_pin, False)
 
-        resume_time = datetime.now() + timedelta(minutes=self.interval_minutes)
-        logger.info(f"Break will end at {resume_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        # Calculate how much time is left until the scheduled next run start
+        remaining = self.next_run_start_time - time.time()
+
+        if remaining <= 0:
+            logger.warning(
+                f"No break time left! Scheduled next run start was "
+                f"{remaining:.2f} seconds ago. Continuing immediately..."
+            )
+            return
+        
+        self.cameras.close_cameras()
+
+        resume_dt = datetime.fromtimestamp(self.next_run_start_time)
+        logger.info(f"Break will end at {resume_dt.strftime('%Y-%m-%d %H:%M:%S')}")
         logger.info("Press Ctrl+C to exit the experiment during the break.")
 
-        start_t = time.time()
-        total_break = self.interval_minutes * 60
+        cameras_reinitialized = False  # Flag to ensure cameras are reinitialized only once
 
         try:
             while True:
-                elapsed = time.time() - start_t
-                remaining = total_break - elapsed
+                remaining = self.next_run_start_time - time.time()
+
                 if remaining <= 0:
+                    logger.info("Break time has ended. Proceeding to the next run.")
                     break
+
+                # Check if remaining time is below the reinitialization threshold and cameras not yet reinitialized
+                if not cameras_reinitialized and remaining <= reinit_threshold:
+                    logger.info(
+                        f"Remaining break time ({remaining:.2f} seconds) is below the "
+                        f"reinitialization threshold of {reinit_threshold} seconds. "
+                        "Reinitializing cameras now."
+                    )
+                    self.reinitialize_cameras()
+                    cameras_reinitialized = True  # Ensure this block runs only once
+
+                # Display remaining break time
                 mins, secs = divmod(int(remaining), 60)
                 print(f"Break time remaining: {mins:02d}:{secs:02d}", end='\r')
+
                 time.sleep(delay)
         except KeyboardInterrupt:
             logger.info("Break interrupted by user.")
             self.terminate_experiment()
             self.cleanup()
             raise
-
-        print('\n')
-        self.reinitialize_cameras()
+        finally:
+            print()
 
     def reinitialize_cameras(self):
         """
