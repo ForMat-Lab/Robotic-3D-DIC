@@ -394,8 +394,8 @@ class Experiment:
             camera_id = idx
             exposure_val = camera_obj.ExposureTime.GetValue()
 
-            unix_timestamp = int(timestamp.timestamp())
-            datetime_str = timestamp.astimezone().strftime('%Y-%m-%d %H:%M:%S')
+            unix_timestamp = timestamp.timestamp()
+            datetime_str = timestamp.astimezone().strftime('%Y-%m-%d %H:%M:%S.%f')
 
             self.csv_writer.writerow([
                 self.run_count,
