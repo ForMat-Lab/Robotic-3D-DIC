@@ -328,7 +328,7 @@ class Experiment:
             logger.error(f"Run {self.run_count}, Sample {sample_index}: No frames captured.")
 
         # Signal capture completion
-        logger.info("Signaling robot that capture is complete.")
+        logger.info(f"Run {self.run_count}: Signaling robot that capture is complete.")
         self.arduino.set_digital(self.DI_CAPTURE_COMPLETE_pin, True)
         time.sleep(delay)
         self.arduino.set_digital(self.DI_CAPTURE_COMPLETE_pin, False)
