@@ -1,9 +1,10 @@
 {
     "experiment_name": "TestExperiment",
     "number_of_samples": 9,
-    "interval_minutes": 30,
-    "turn_off_cameras_between_runs": false,
     "total_runs": -1,
+    "interval_minutes": 30,
+    "interval_calculation_mode": "constant_break",
+    "turn_off_cameras_between_runs": false,
     "output_folder": "captured_images",
     "display_scale_factor": 0.25,
     "display_images": true,

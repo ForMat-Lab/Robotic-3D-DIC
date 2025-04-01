@@ -83,6 +83,7 @@ class Experiment:
         self.turn_off_cameras_between_runs = config.get("turn_off_cameras_between_runs", True)
         self.num_samples = config['number_of_samples']
         self.interval_minutes = config.get('interval_minutes', 30)
+        self.interval_calculation_mode = config.get("interval_calculation_mode", "constant_interval")
         self.total_runs = config.get('total_runs', -1)  # -1 => infinite
         self.visit_counts = [0] * self.num_samples
         self.start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -256,7 +257,9 @@ class Experiment:
         logger.info(f"Run {self.run_count}: Signaling robot to start the run.")
         self.arduino.set_digital(self.DI_RUN_pin, True)
         self.run_start_time = time.time()
-        self.next_run_start_time = self.run_start_time + self.interval_minutes * 60
+        # For "constant_interval" mode, calculate next_run_start_time at the beginning of the run.
+        if self.interval_calculation_mode == "constant_interval":
+            self.next_run_start_time = self.run_start_time + self.interval_minutes * 60
 
         new_exposure_table = False
         if self.exposure_mode == 'SetOnce' and self.sample_exposures is None:
@@ -425,6 +428,10 @@ class Experiment:
             self.cameras.close_cameras()
         else:
             logger.info("Keeping cameras on during break as per configuration.")
+
+        # For "constant_break" mode, calculate next_run_start_time at the beginning of the break.
+        if self.interval_calculation_mode == "constant_break":
+            self.next_run_start_time = time.time() + self.interval_minutes * 60
 
         # Calculate how much time is left until the scheduled next run start
         remaining = self.next_run_start_time - time.time()
