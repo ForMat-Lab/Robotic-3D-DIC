@@ -4,7 +4,7 @@ MycoRobo3d-DIC: Automated Imaging Acquisition System
 Author: Özgüç B. Çapunaman
 Maintainers: Özgüç B. Çapunaman, Alale Mohseni
 Institution: ForMatLab @ Penn State University
-Year: 2024
+Year: 2025
 Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
 """
 
