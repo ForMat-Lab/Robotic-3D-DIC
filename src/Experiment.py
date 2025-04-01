@@ -80,6 +80,7 @@ class Experiment:
         self.arduino_port = None if self.auto_detect_port else config['arduino_settings']['port']
 
         # Experiment parameters
+        self.turn_off_cameras_between_runs = config.get("turn_off_cameras_between_runs", True)
         self.num_samples = config['number_of_samples']
         self.interval_minutes = config.get('interval_minutes', 30)
         self.total_runs = config.get('total_runs', -1)  # -1 => infinite
@@ -410,17 +411,20 @@ class Experiment:
 
     def enter_break(self, delay=1, reinit_threshold=30):
         """
-        Close cameras and pause between runs for a specified break interval.
-        
-        Reinitialize cameras when the remaining break time falls below `reinit_threshold` seconds.
+        Pause between runs for a specified break interval.
+        Optionally closes the cameras between runs based on configuration.
 
         Args:
             delay (int): Delay in seconds between each loop iteration during the break.
             reinit_threshold (int): Time in seconds before the end of the break to reinitialize cameras.
-                                    Defaults to 10 seconds.
         """
         logger.info(f"Entering break period of {self.interval_minutes} minutes.")
-        logger.info("Closing cameras and resetting run pin.")
+
+        if self.turn_off_cameras_between_runs:
+            logger.info("Turning cameras off between runs as per configuration.")
+            self.cameras.close_cameras()
+        else:
+            logger.info("Keeping cameras on during break as per configuration.")
 
         # Calculate how much time is left until the scheduled next run start
         remaining = self.next_run_start_time - time.time()
@@ -432,8 +436,6 @@ class Experiment:
             )
             return
         
-        self.cameras.close_cameras()
-
         resume_dt = datetime.fromtimestamp(self.next_run_start_time)
         logger.info(f"Break will end at {resume_dt.strftime('%Y-%m-%d %H:%M:%S')}")
         logger.info("Press Ctrl+C to exit the experiment during the break.")
@@ -448,15 +450,15 @@ class Experiment:
                     logger.info("Break time has ended. Proceeding to the next run.")
                     break
 
-                # Check if remaining time is below the reinitialization threshold and cameras not yet reinitialized
-                if not cameras_reinitialized and remaining <= reinit_threshold:
+                # Only reinitialize cameras if they were turned off
+                if self.turn_off_cameras_between_runs and not cameras_reinitialized and remaining <= reinit_threshold:
                     logger.info(
                         f"Remaining break time ({remaining:.2f} seconds) is below the "
                         f"reinitialization threshold of {reinit_threshold} seconds. "
                         "Reinitializing cameras now."
                     )
                     self.reinitialize_cameras()
-                    cameras_reinitialized = True  # Ensure this block runs only once
+                    cameras_reinitialized = True
 
                 # Display remaining break time
                 mins, secs = divmod(int(remaining), 60)

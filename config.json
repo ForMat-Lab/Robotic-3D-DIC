@@ -2,6 +2,7 @@
     "experiment_name": "TestExperiment",
     "number_of_samples": 9,
     "interval_minutes": 30,
+    "turn_off_cameras_between_runs": false,
     "total_runs": -1,
     "output_folder": "captured_images",
     "display_scale_factor": 0.25,
@@ -10,8 +11,8 @@
         "width": 2448,
         "height": 2048,
         "exposure_time": 100000,
-        "exposure_mode": "SetOnce" 
-},
+        "exposure_mode": "SetOnce"
+    },
     "arduino_settings": {
         "port": "COM3",
         "auto_detect_port": true,
