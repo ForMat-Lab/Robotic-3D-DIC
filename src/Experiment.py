@@ -4,7 +4,7 @@ Experiment module for the MycoRobo3d-DIC Automated Imaging Acquisition System.
 Author: Özgüç B. Çapunaman
 Maintainers: Özgüç B. Çapunaman, Alale Mohseni
 Institution: ForMatLab @ Penn State University
-Year: 2024
+Year: 2025
 Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
 """
 
@@ -37,7 +37,6 @@ class Experiment:
         Args:
             config (dict): Configuration dictionary with user-defined parameters.
         """
-        # Print ASCII header (optional, can be removed or updated)
         self._header = r'''
 8""8""8                   8"""8                     eeee  8""""8      8""""8 8  8""""8 
 8  8  8 e    e eeee eeeee 8   8  eeeee eeeee  eeeee    8  8    8      8    8 8  8    " 
