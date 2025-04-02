@@ -336,5 +336,3 @@ if __name__ == "__main__":
 
     # Run the test
     test_arduino_controller()
-
-    
