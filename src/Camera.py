@@ -1,4 +1,6 @@
 import cv2
+import time
+import threading
 from pypylon import pylon
 import logging
 
@@ -7,13 +9,11 @@ logger = logging.getLogger(__name__)
 class Camera:
     """
     A class to manage one or more Basler cameras via the pypylon library.
-    Handles configuration of exposure times, image grabbing, etc.
+    This version continuously grabs frames in a background thread and
+    stores the latest frames in a buffer.
     """
 
-    def __init__(
-        self, width=2448, height=2048, exposure_time=5000,
-        timeout=5000, scale_factor=0.5
-    ):
+    def __init__(self, width=2448, height=2048, exposure_time=5000, timeout=5000, scale_factor=0.5):
         """
         Initialize the camera controller with configurable parameters.
 
@@ -30,6 +30,11 @@ class Camera:
         self.timeout = timeout
         self.scale_factor = scale_factor
         self.cameras = []
+        # Variables for background frame grabbing
+        self._running = False
+        self._grab_thread = None
+        self._latest_frames = []
+        self._lock = threading.Lock()
 
     def initialize_cameras(self):
         """
@@ -49,24 +54,65 @@ class Camera:
 
     def start_grabbing(self):
         """
-        Start grabbing for all initialized cameras using the LatestImageOnly strategy.
+        Start the background thread that continuously pulls frames from all cameras.
         """
+        # Start the hardware grabbing for each camera
         for camera in self.cameras:
             if not camera.IsGrabbing():
                 camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
-        logger.info("All cameras started grabbing.")
+        # Initialize the frame buffer
+        with self._lock:
+            self._latest_frames = [None] * len(self.cameras)
+        # Start the background thread
+        self._running = True
+        self._grab_thread = threading.Thread(target=self._grab_loop, daemon=True)
+        self._grab_thread.start()
+        logger.info("Background frame grabbing thread started.")
+
+    def _grab_loop(self):
+        """
+        Background loop that continuously grabs frames from each camera.
+        """
+        while self._running:
+            for idx, camera in enumerate(self.cameras):
+                if camera.IsGrabbing():
+                    try:
+                        # Use TimeoutHandling_Return to avoid exceptions on timeout
+                        grab_result = camera.RetrieveResult(self.timeout, pylon.TimeoutHandling_Return)
+                        if grab_result.GrabSucceeded():
+                            # Copy the frame to avoid overwriting issues
+                            frame = grab_result.Array.copy()
+                            with self._lock:
+                                self._latest_frames[idx] = frame
+                        grab_result.Release()
+                    except Exception as e:
+                        logger.error(
+                            f"Error grabbing frame from camera {camera.GetDeviceInfo().GetModelName()}: {e}"
+                        )
+            # Sleep briefly to reduce CPU usage
+            time.sleep(0.01)
+
+    def grab_frames(self):
+        """
+        Retrieve the most recent frames from the buffer.
+        
+        Returns:
+            list of np.ndarray: The latest frames (one per camera).
+        """
+        with self._lock:
+            # Return a copy of the latest frames list
+            frames = self._latest_frames.copy()
+        return frames
 
     def set_auto_exposure(self, mode='Once'):
         """
         Enable auto exposure for all initialized cameras.
-        Typically used with 'Once' or 'Continuous'.
-
+        
         Args:
             mode (str): 'Once' or 'Continuous' for auto exposure modes.
-
+            
         Returns:
-            int or float: The average exposure time set by the cameras, 
-                          or the manual exposure if auto fails.
+            int or float: The average exposure time set by the cameras.
         """
         if not self.cameras:
             logger.error("No cameras available to set auto exposure.")
@@ -80,7 +126,6 @@ class Camera:
                     f"Auto-exposure '{mode}' enabled for camera: "
                     f"{camera.GetDeviceInfo().GetModelName()}"
                 )
-                # The actual exposure time might not instantly match, but let's read it
                 exposure_time = camera.ExposureTime.GetValue()
                 exposure_times.append(exposure_time)
                 logger.debug(
@@ -88,8 +133,7 @@ class Camera:
                 )
             except Exception as e:
                 logger.error(
-                    f"Failed to enable auto-exposure for camera "
-                    f"{camera.GetDeviceInfo().GetModelName()}: {e}"
+                    f"Failed to enable auto-exposure for camera {camera.GetDeviceInfo().GetModelName()}: {e}"
                 )
         if exposure_times:
             average_exp = sum(exposure_times) / len(exposure_times)
@@ -99,7 +143,7 @@ class Camera:
     def set_manual_exposure(self, exposure_time):
         """
         Disable auto-exposure and set a manual exposure time (µs) for all cameras.
-
+        
         Args:
             exposure_time (int|float): Desired manual exposure time in microseconds.
         """
@@ -117,52 +161,18 @@ class Camera:
                 )
             except Exception as e:
                 logger.error(
-                    f"Failed to set manual exposure for camera "
-                    f"{camera.GetDeviceInfo().GetModelName()}: {e}"
+                    f"Failed to set manual exposure for camera {camera.GetDeviceInfo().GetModelName()}: {e}"
                 )
-
-    def grab_frames(self):
-        """
-        Grab frames from all the initialized cameras.
-
-        Returns:
-            list of np.ndarray: The captured frames (one per camera).
-        """
-        frames = []
-        if not self.cameras:
-            logger.warning("No cameras available to grab frames.")
-            return frames
-
-        for camera in self.cameras:
-            if camera.IsGrabbing():
-                try:
-                    grab_result = camera.RetrieveResult(
-                        self.timeout, pylon.TimeoutHandling_ThrowException
-                    )
-                    if grab_result.GrabSucceeded():
-                        frames.append(grab_result.Array)
-                    else:
-                        logger.error(
-                            f"Failed to grab frame from camera: "
-                            f"{camera.GetDeviceInfo().GetModelName()}"
-                        )
-                    grab_result.Release()
-                except Exception as e:
-                    logger.error(
-                        f"Exception while grabbing frame from camera "
-                        f"{camera.GetDeviceInfo().GetModelName()}: {e}"
-                    )
-            else:
-                logger.error(
-                    f"Camera {camera.GetDeviceInfo().GetModelName()} "
-                    "is not grabbing."
-                )
-        return frames
 
     def close_cameras(self):
         """
-        Stop grabbing and close all cameras, then release any OpenCV windows.
+        Stop background grabbing, close all cameras, and release any OpenCV windows.
         """
+        # Stop the background grabbing thread
+        self._running = False
+        if self._grab_thread is not None:
+            self._grab_thread.join()
+        # Stop hardware grabbing and close cameras
         for camera in self.cameras:
             if camera.IsGrabbing():
                 camera.StopGrabbing()
