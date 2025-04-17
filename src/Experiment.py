@@ -60,9 +60,6 @@ class Experiment:
         self.exposure_time = config['camera_settings'].get('exposure_time')
         self.exposure_mode = config['camera_settings'].get('exposure_mode', 'Manual')
         
-        self.sample_exposures = None
-        self.exposure_table_path = None
-        
         self.scale_factor = config.get('display_scale_factor', 0.5)
         self.display_images = config.get('display_images', True)
 
@@ -89,10 +86,6 @@ class Experiment:
         self.run_start_time = None
         self.next_run_start_time = None
         self.run_count = 0
-
-        # Initialize Arduino and cameras
-        self.arduino = self.initialize_arduino()
-        self.cameras = self.initialize_cameras()
         
         # Create output folders for experiment data
         self.output_base_folder = self.setup_output_folder()
@@ -103,8 +96,11 @@ class Experiment:
         self.csv_log_path = os.path.join(self.output_base_folder, experiment_csv_name)
 
         # 'SetOnce' -> load existing exposure table if available
+        self.sample_exposures = None
+        self.exposure_table_path = config.get('exposure_table_path', None)
         if self.exposure_mode == 'SetOnce':
-            self.exposure_table_path = os.path.join(self.output_base_folder, "exposure_table.csv")
+            if self.exposure_table_path is None:
+                self.exposure_table_path = os.path.join(self.output_base_folder, "exposure_table.csv")
             self.load_exposure_table()
 
         # Initialize the CSV file
@@ -122,6 +118,10 @@ class Experiment:
                 "filename"
             ])
             self.csv_file.flush()
+
+        # Initialize Arduino and cameras
+        self.arduino = self.initialize_arduino()
+        self.cameras = self.initialize_cameras()
 
     def initialize_arduino(self):
         """

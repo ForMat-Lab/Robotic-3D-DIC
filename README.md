@@ -17,6 +17,8 @@
   - [5. Flash Arduino with StandardFirmata](#5-flash-arduino-with-standardfirmata)
 - [Usage](#usage)
   - [Configuration](#configuration)
+    - [Configuration Options](#configuration-options)
+    - [Sample Configuration File](#sample-configuration-file)
   - [Running the Experiment](#running-the-experiment)
 - [Signal Mapping and Communication Flow](#signal-mapping-and-communication-flow)
   - [Overview](#overview-1)
@@ -30,8 +32,8 @@
 ## System Requirements
 
 - **Operating System**: Windows (required for Basler Pylon Software)
-- **Cameras**: Basler cameras compatible with Pylon SDK
-- **Microcontroller**: Arduino Uno or compatible board
+- **Cameras**: Basler cameras compatible with the Pylon SDK
+- **Microcontroller**: Arduino Uno or a compatible board
 - **Robot**: ABB robot with RAPID programming capability
 - **Software**:
   - Basler Pylon Software
@@ -66,7 +68,7 @@ Download and install Anaconda for Python 3.x from the official website:
 ### 3. Create Anaconda Environment and Install Libraries
 
 1. **Open Anaconda Prompt**.
-2. Execute the following commands (do not include the `$` sign):
+2. Execute the following commands:
 
    ```bash
    conda create --name mycorobo3d-dic python=3.8
@@ -98,21 +100,99 @@ Download and install the Arduino IDE from the official website:
 
 ### Configuration
 
-Before running the experiment, configure the `config.json` file according to your setup. Here is an example configuration:
+Before running the experiment, you must set up a configuration file (typically named `config.json`) that specifies system parameters. The configuration is validated at startup, so ensure all required keys are provided and are of the correct type.
+
+#### Configuration Options
+
+**Top-Level Keys:**
+
+- **`experiment_name`** (string):  
+  The name of the experiment.  
+  _Example_: `'TestExperiment'`
+
+- **`number_of_samples`** (integer):  
+  The number of sample positions to capture images from during each run.  
+  _Example_: `9`
+
+- **`interval_minutes`** (integer, default: `30`):  
+  The break interval (in minutes) between consecutive runs.
+
+- **`total_runs`** (integer, default: `-1`):  
+  The total number of runs to perform. Use `-1` for an indefinite number of runs until manually terminated.
+
+- **`output_folder`** (string):  
+  The directory where captured images, CSV logs, and the PDF report will be saved.
+
+- **`display_scale_factor`** (number, default: `0.5`):  
+  Factor used to scale images for display.
+
+- **`display_images`** (boolean, default: `true`):  
+  Whether to display images during acquisition.
+
+- **`turn_off_cameras_between_runs`** (boolean, default: `true`):  
+  If set to `true`, the cameras will be turned off during the break interval between runs.
+
+- **`interval_calculation_mode`** (string, default: `'constant_interval'`):  
+  Defines how the break interval is calculated. Allowed values are `'constant_interval'` and `'constant_break'`.
+
+**Camera Settings (`camera_settings` object):**
+
+- **`width`** (integer):  
+  The image width in pixels.
+  
+- **`height`** (integer):  
+  The image height in pixels.
+  
+- **`exposure_time`** (number):  
+  The exposure time in microseconds.
+  
+- **`exposure_mode`** (string, default: `'Manual'`):  
+  Sets the exposure mode. Allowed values:
+  - `'Manual'`: Uses the specified `exposure_time`.
+  - `'Continuous'`: Enables auto-exposure continuously.
+  - `'SetOnce'`: Auto-exposes once per sample capture and then uses the learned exposure.
+  
+- **`scale_factor`** (number):  
+  (If needed) Scale factor used for generating the PDF report’s camera settings section.
+
+**Arduino Settings (`arduino_settings` object):**
+
+- **`input_pins`** (object):  
+  A mapping of Arduino digital input pins. Must include:
+  - **`DO_CAPTURE`** (integer): Pin used to detect a capture signal from the robot.
+  - **`DO_RUN_COMPLETE`** (integer): Pin used to detect when a run is complete.
+  
+- **`output_pins`** (object):  
+  A mapping of Arduino digital output pins. Must include:
+  - **`DI_RUN`** (integer): Pin used to signal the robot to start a run.
+  - **`DI_CAPTURE_COMPLETE`** (integer): Pin used to signal the robot that image capture is complete.
+  
+- **`auto_detect_port`** (boolean, default: `false`):  
+  If set to `true`, the system will attempt to auto-detect the Arduino port.
+  
+- **`port`** (string, *required if* `auto_detect_port` is `false`):  
+  The COM port or device file for the Arduino connection.
+
+#### Sample Configuration File
+
+Below is an example `config.json` file:
 
 ```json
 {
     "experiment_name": "TestExperiment",
     "number_of_samples": 9,
-    "interval_minutes": 30,
     "total_runs": -1,
+    "interval_minutes": 30,
+    "interval_calculation_mode": "constant_interval",
+    "turn_off_cameras_between_runs": false,
     "output_folder": "captured_images",
     "display_scale_factor": 0.25,
+    "display_images": true,
     "camera_settings": {
         "width": 2448,
         "height": 2048,
         "exposure_time": 100000,
-        "auto_exposure": true
+        "exposure_mode": "Manual"
     },
     "arduino_settings": {
         "port": "COM3",
@@ -186,12 +266,12 @@ The following table summarizes the signals, their Arduino pin assignments, direc
 
 | Signal Name (Robot)      | Arduino Pin | Direction                | Python Variable             | Description                                    |
 |--------------------------|-------------|--------------------------|-----------------------------|------------------------------------------------|
-| `DI_DIC_0` | Pin **2**   | Arduino → Robot          | `DI_RUN`              | Arduino signals robot to start the run        |
+| `DI_DIC_0` | Pin **2**   | Arduino → Robot          | `DI_RUN`              | Arduino signals the robot to start the run        |
 | `DI_DIC_1` | Pin **3**   | Arduino → Robot          | `DI_CAPTURE_COMPLETE` | Arduino signals that image capture is complete|
 | `DO_DIC_0` | Pin **6**   | Robot → Arduino          | `DO_RUN_COMPLETE`     | Robot signals that the run is complete        |
 | `DO_DIC_1` | Pin **7**   | Robot → Arduino          | `DO_CAPTURE`          | Robot signals to start image capture          |
 
-**Notes**:
+*Notes*:
 
 - **Direction**: Indicates the flow of the signal. For example, "Robot → Arduino" means the robot sets the signal, and the Arduino reads it.
 - **Arduino Pin**: The digital pin number on the Arduino board where the signal is connected.
