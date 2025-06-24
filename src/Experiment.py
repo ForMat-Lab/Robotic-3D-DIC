@@ -1,11 +1,11 @@
 """
-Experiment module for the MycoRobo3d-DIC Automated Imaging Acquisition System.
+Robotic-3D-DIC: Automated Image Acquisition System
 
-Author: Özgüç B. Çapunaman
+Developed at ForMatLab, Penn State University (2025)
+
+Author:      Özgüç B. Çapunaman
 Maintainers: Özgüç B. Çapunaman, Alale Mohseni
-Institution: ForMatLab @ Penn State University
-Year: 2025
-Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
+GitHub:      https://github.com/ForMat-Lab/Robotic-3D-DIC
 """
 
 import os
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 class Experiment:
     """
-    A class to handle the MycoRobo3d-DIC automated imaging acquisition system.
+    A class to handle the Robotic-3D-DIC automated imaging acquisition system.
 
     This class coordinates the experiment flow, handling Arduino signals for robot
     movement, camera captures, exposure settings, image saving, and logging.
@@ -37,22 +37,17 @@ class Experiment:
         Args:
             config (dict): Configuration dictionary with user-defined parameters.
         """
-        self._header = r'''
-8""8""8                   8"""8                     eeee  8""""8      8""""8 8  8""""8 
-8  8  8 e    e eeee eeeee 8   8  eeeee eeeee  eeeee    8  8    8      8    8 8  8    " 
-8e 8  8 8    8 8  8 8  88 8eee8e 8  88 8   8  8  88    8  8e   8      8e   8 8e 8e     
-88 8  8 8eeee8 8e   8   8 88   8 8   8 8eee8e 8   8 eee8  88   8 eeee 88   8 88 88     
-88 8  8   88   88   8   8 88   8 8   8 88   8 8   8    88 88   8      88   8 88 88   e 
-88 8  8   88   88e8 8eee8 88   8 8eee8 88eee8 8eee8 eee88 88eee8      88eee8 88 88eee8                                                                               
-
-    MycoRobo3d-DIC: Automated Image Acquisition System
-
-    Author: Özgüç B. Çapunaman
-    Maintainers: Özgüç B. Çapunaman, Alale Mohseni
-    Institution: ForMatLab @ Penn State University
-    Year: 2024
-    Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
-'''
+        self._header = r"""
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Robotic-3D-DIC: Automated Image Acquisition System                           │
+│                                                                              │
+│ Developed at ForMatLab, Penn State University (2025)                         │
+│                                                                              │
+│ Author      : Özgüç B. Çapunaman                                             │
+│ Maintainers : Özgüç B. Çapunaman, Alale Mohseni                              │
+│ GitHub      : https://github.com/ForMat-Lab/Robotic-3D-DIC                   │
+└──────────────────────────────────────────────────────────────────────────────┘
+"""
         print(self._header)
 
         # Configuration

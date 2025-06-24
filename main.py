@@ -1,11 +1,11 @@
 """
-MycoRobo3d-DIC: Automated Imaging Acquisition System
+Robotic-3D-DIC: Automated Image Acquisition System
 
-Author: Özgüç B. Çapunaman
+Developed at ForMatLab, Penn State University (2025)
+
+Author:      Özgüç B. Çapunaman
 Maintainers: Özgüç B. Çapunaman, Alale Mohseni
-Institution: ForMatLab @ Penn State University
-Year: 2025
-Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
+GitHub:      https://github.com/ForMat-Lab/Robotic-3D-DIC
 """
 
 import logging
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 def main():
     """
-    Main entry point for the MycoRobo3D-DIC experiment.
+    Main entry point for the Robotic-3D-DIC experiment.
     Loads configuration, validates it, then runs the Experiment.
     """
     try:

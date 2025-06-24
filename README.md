@@ -1,8 +1,8 @@
-# MycoRobo3D-DIC: Automated Imaging Acquisition System
+# Robotic-3D-DIC: Automated Imaging Acquisition System
 
 ## Overview
 
-**MycoRobo3D-DIC** is an automated imaging acquisition system designed for high-throughput studies. It integrates robotic automation with imaging hardware to capture images at predefined sample positions. The system facilitates synchronized movements and image captures between an ABB robot, Basler cameras, and an Arduino microcontroller.
+**Robotic-3D-DIC** is an automated imaging acquisition system designed for high-throughput studies. It integrates robotic automation with imaging hardware to capture images at predefined sample positions. The system facilitates synchronized movements and image captures between an ABB robot, Basler cameras, and an Arduino microcontroller.
 
 ---
 
@@ -71,8 +71,8 @@ Download and install Anaconda for Python 3.x from the official website:
 2. Execute the following commands:
 
    ```bash
-   conda create --name mycorobo3d-dic python=3.8
-   conda activate mycorobo3d-dic
+   conda create --name Robotic-3D-dic python=3.8
+   conda activate Robotic-3D-dic
    pip install pypylon opencv-python pyfirmata reportlab
    ```
 
@@ -224,7 +224,7 @@ Below is an example `config.json` file:
 2. **Activate the Anaconda Environment**:
 
    ```bash
-   conda activate mycorobo3d-dic
+   conda activate Robotic-3D-dic
    ```
 
 3. **Run the Main Script**:
@@ -246,7 +246,7 @@ Below is an example `config.json` file:
 
 ### Overview
 
-The **MycoRobo3D-DIC** system uses digital signals to synchronize operations between the ABB robot, the Arduino microcontroller, and the Python software. This section explains how these signals are mapped, their directions, and how they facilitate communication between the components.
+The **Robotic-3D-DIC** system uses digital signals to synchronize operations between the ABB robot, the Arduino microcontroller, and the Python software. This section explains how these signals are mapped, their directions, and how they facilitate communication between the components.
 
 ### Signal Definitions and Flow Logic
 
@@ -321,7 +321,7 @@ The following table summarizes the signals, their Arduino pin assignments, direc
 - **Author**: Özgüç B. Çapunaman
 - **Maintainers**: Özgüç B. Çapunaman, Alale Mohseni
 - **Institution**: ForMatLab @ Penn State University
-- **Year**: 2024
+- **Year**: 2025
 
 ---
 
