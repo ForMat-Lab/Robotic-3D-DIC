@@ -4,8 +4,19 @@ import ast
 import os
 import numpy as np
 from scipy.spatial.transform import Rotation
-from util import composeH, decomposeH, readJSON, writeJSON
 
+def composeH(R, t):
+    """
+    Composes a 4x4 homogeneous transformation matrix from a rotation matrix and translation vector.
+
+    :param R: Rotation matrix (3x3).
+    :param t: Translation vector (3x1).
+    :return: Homogeneous transformation matrix (4x4).
+    """
+    H = np.eye(4)
+    H[:3, :3] = np.asarray(R)
+    H[:3, 3] = np.asarray(t).ravel()
+    return H
 
 class TROBParser:
 	"""

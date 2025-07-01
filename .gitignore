@@ -163,6 +163,13 @@ cython_debug/
 #.idea/
 
 .DS_Store
+
 /util
+/utilities/out
+
+*.svg
+*.png
+
 *.npy
+
 *.mod

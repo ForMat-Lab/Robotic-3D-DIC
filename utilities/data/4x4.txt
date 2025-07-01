@@ -1,0 +1,542 @@
+PS C:\Users\bug61a\Documents\GitHub\MycoRobo3D-DIC> & C:/Users/bug61a/anaconda3/envs/limc2/python.exe c:/Users/bug61a/Documents/GitHub/MycoRobo3D-DIC/main.py
+2025-03-07 18:02:32,518 - INFO - Configuration loaded from config.json.
+2025-03-07 18:02:32,518 - INFO - Configuration validation successful.
+
+8""8""8                   8"""8                     eeee  8""""8      8""""8 8  8""""8 
+8  8  8 e    e eeee eeeee 8   8  eeeee eeeee  eeeee    8  8    8      8    8 8  8    " 
+8e 8  8 8    8 8  8 8  88 8eee8e 8  88 8   8  8  88    8  8e   8      8e   8 8e 8e     
+88 8  8 8eeee8 8e   8   8 88   8 8   8 8eee8e 8   8 eee8  88   8 eeee 88   8 88 88     
+88 8  8   88   88   8   8 88   8 8   8 88   8 8   8    88 88   8      88   8 88 88   e 
+88 8  8   88   88e8 8eee8 88   8 8eee8 88eee8 8eee8 eee88 88eee8      88eee8 88 88eee8
+
+    MycoRobo3d-DIC: Automated Image Acquisition System
+
+    Author: Özgüç B. Çapunaman
+    Maintainers: Özgüç B. Çapunaman, Alale Mohseni
+    Institution: ForMatLab @ Penn State University
+    Year: 2024
+    Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
+
+2025-03-07 18:02:32,535 - INFO - Detected Arduino on port: COM3 (VID: 2341, PID: 0043)
+2025-03-07 18:02:37,545 - INFO - Connected to Arduino on port COM3
+2025-03-07 18:02:37,545 - INFO - Arduino input pin set up: DO_RUN_COMPLETE on pin 6
+2025-03-07 18:02:37,545 - INFO - Set up digital input on pin 6.
+2025-03-07 18:02:37,545 - INFO - Arduino input pin set up: DO_CAPTURE on pin 7
+2025-03-07 18:02:37,548 - INFO - Set up digital input on pin 7.
+2025-03-07 18:02:37,548 - INFO - Arduino output pin set up: DI_RUN on pin 2
+2025-03-07 18:02:37,548 - INFO - Set up digital output on pin 2.
+2025-03-07 18:02:37,549 - INFO - Arduino output pin set up: DI_CAPTURE_COMPLETE on pin 3
+2025-03-07 18:02:37,549 - INFO - Set up digital output on pin 3.
+2025-03-07 18:02:38,401 - INFO - All cameras initialized, opened, and default settings applied.
+2025-03-07 18:02:38,401 - INFO - Continuous mode: Auto-exposure enabled continuously.
+2025-03-07 18:02:38,402 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 18:02:38,404 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 18:02:38,423 - INFO - All cameras started grabbing.
+2025-03-07 18:02:38,423 - INFO - Cameras initialized and started grabbing.
+2025-03-07 18:02:38,423 - INFO - Output base folder created at captured_images\2025-03-07_18-02-32\4x4
+2025-03-07 18:02:38,423 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_0
+2025-03-07 18:02:38,423 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_1
+2025-03-07 18:02:38,425 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_2
+2025-03-07 18:02:38,425 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_3
+2025-03-07 18:02:38,426 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_4
+2025-03-07 18:02:38,426 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_5
+2025-03-07 18:02:38,428 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_6
+2025-03-07 18:02:38,428 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_7
+2025-03-07 18:02:38,428 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_8
+2025-03-07 18:02:38,429 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_9
+2025-03-07 18:02:38,429 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_10
+2025-03-07 18:02:38,430 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_11
+2025-03-07 18:02:38,430 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_12
+2025-03-07 18:02:38,431 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_13
+2025-03-07 18:02:38,432 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_14
+2025-03-07 18:02:38,432 - INFO - Sample folder created at captured_images\2025-03-07_18-02-32\4x4\Sample_15
+Type 'start' to begin the experiment or 'quit' to exit: start
+2025-03-07 18:02:47,441 - INFO - Experiment started. Press Ctrl+C anytime to interrupt.
+2025-03-07 18:02:47,441 - INFO - Starting run 0
+2025-03-07 18:02:47,441 - INFO - Run 0: Signaling robot to start the run.
+2025-03-07 18:03:18,854 - INFO - Run 0, Sample 0: Capture signal received.
+2025-03-07 18:03:18,873 - INFO - Run 0, Sample 0: Saved image sample_0_20250307_180318_0000_0.tif
+2025-03-07 18:03:18,879 - INFO - Run 0, Sample 0: Saved image sample_0_20250307_180318_0000_1.tif
+2025-03-07 18:03:18,946 - INFO - Run 0, Sample 0: Images captured and logged.
+2025-03-07 18:03:18,946 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:03:37,520 - INFO - Run 0, Sample 1: Capture signal received.
+2025-03-07 18:03:37,541 - INFO - Run 0, Sample 1: Saved image sample_1_20250307_180337_0000_0.tif
+2025-03-07 18:03:37,548 - INFO - Run 0, Sample 1: Saved image sample_1_20250307_180337_0000_1.tif
+2025-03-07 18:03:37,560 - INFO - Run 0, Sample 1: Images captured and logged.
+2025-03-07 18:03:37,560 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:03:56,128 - INFO - Run 0, Sample 2: Capture signal received.
+2025-03-07 18:03:56,141 - INFO - Run 0, Sample 2: Saved image sample_2_20250307_180356_0000_0.tif
+2025-03-07 18:03:56,148 - INFO - Run 0, Sample 2: Saved image sample_2_20250307_180356_0000_1.tif
+2025-03-07 18:03:56,157 - INFO - Run 0, Sample 2: Images captured and logged.
+2025-03-07 18:03:56,157 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:04:14,738 - INFO - Run 0, Sample 3: Capture signal received.
+2025-03-07 18:04:14,746 - INFO - Run 0, Sample 3: Saved image sample_3_20250307_180414_0000_0.tif
+2025-03-07 18:04:14,752 - INFO - Run 0, Sample 3: Saved image sample_3_20250307_180414_0000_1.tif
+2025-03-07 18:04:14,757 - INFO - Run 0, Sample 3: Images captured and logged.
+2025-03-07 18:04:14,758 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:04:33,327 - INFO - Run 0, Sample 4: Capture signal received.
+2025-03-07 18:04:33,344 - INFO - Run 0, Sample 4: Saved image sample_4_20250307_180433_0000_0.tif
+2025-03-07 18:04:33,352 - INFO - Run 0, Sample 4: Saved image sample_4_20250307_180433_0000_1.tif
+2025-03-07 18:04:33,356 - INFO - Run 0, Sample 4: Images captured and logged.
+2025-03-07 18:04:33,356 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:04:51,930 - INFO - Run 0, Sample 5: Capture signal received.
+2025-03-07 18:04:51,950 - INFO - Run 0, Sample 5: Saved image sample_5_20250307_180451_0000_0.tif
+2025-03-07 18:04:51,956 - INFO - Run 0, Sample 5: Saved image sample_5_20250307_180451_0000_1.tif
+2025-03-07 18:04:51,961 - INFO - Run 0, Sample 5: Images captured and logged.
+2025-03-07 18:04:51,962 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:05:10,547 - INFO - Run 0, Sample 6: Capture signal received.
+2025-03-07 18:05:10,558 - INFO - Run 0, Sample 6: Saved image sample_6_20250307_180510_0000_0.tif
+2025-03-07 18:05:10,567 - INFO - Run 0, Sample 6: Saved image sample_6_20250307_180510_0000_1.tif
+2025-03-07 18:05:10,580 - INFO - Run 0, Sample 6: Images captured and logged.
+2025-03-07 18:05:10,581 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:05:29,137 - INFO - Run 0, Sample 7: Capture signal received.
+2025-03-07 18:05:29,152 - INFO - Run 0, Sample 7: Saved image sample_7_20250307_180529_0000_0.tif
+2025-03-07 18:05:29,158 - INFO - Run 0, Sample 7: Saved image sample_7_20250307_180529_0000_1.tif
+2025-03-07 18:05:29,167 - INFO - Run 0, Sample 7: Images captured and logged.
+2025-03-07 18:05:29,167 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:05:47,719 - INFO - Run 0, Sample 8: Capture signal received.
+2025-03-07 18:05:47,738 - INFO - Run 0, Sample 8: Saved image sample_8_20250307_180547_0000_0.tif
+2025-03-07 18:05:47,747 - INFO - Run 0, Sample 8: Saved image sample_8_20250307_180547_0000_1.tif
+2025-03-07 18:05:47,754 - INFO - Run 0, Sample 8: Images captured and logged.
+2025-03-07 18:05:47,756 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:06:06,313 - INFO - Run 0, Sample 9: Capture signal received.
+2025-03-07 18:06:06,327 - INFO - Run 0, Sample 9: Saved image sample_9_20250307_180606_0000_0.tif
+2025-03-07 18:06:06,336 - INFO - Run 0, Sample 9: Saved image sample_9_20250307_180606_0000_1.tif
+2025-03-07 18:06:06,342 - INFO - Run 0, Sample 9: Images captured and logged.
+2025-03-07 18:06:06,343 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:06:24,923 - INFO - Run 0, Sample 10: Capture signal received.
+2025-03-07 18:06:24,941 - INFO - Run 0, Sample 10: Saved image sample_10_20250307_180624_0000_0.tif
+2025-03-07 18:06:24,947 - INFO - Run 0, Sample 10: Saved image sample_10_20250307_180624_0000_1.tif
+2025-03-07 18:06:24,953 - INFO - Run 0, Sample 10: Images captured and logged.
+2025-03-07 18:06:24,953 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:06:43,512 - INFO - Run 0, Sample 11: Capture signal received.
+2025-03-07 18:06:43,525 - INFO - Run 0, Sample 11: Saved image sample_11_20250307_180643_0000_0.tif
+2025-03-07 18:06:43,533 - INFO - Run 0, Sample 11: Saved image sample_11_20250307_180643_0000_1.tif
+2025-03-07 18:06:43,540 - INFO - Run 0, Sample 11: Images captured and logged.
+2025-03-07 18:06:43,540 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:07:02,100 - INFO - Run 0, Sample 12: Capture signal received.
+2025-03-07 18:07:02,112 - INFO - Run 0, Sample 12: Saved image sample_12_20250307_180702_0000_0.tif
+2025-03-07 18:07:02,126 - INFO - Run 0, Sample 12: Saved image sample_12_20250307_180702_0000_1.tif
+2025-03-07 18:07:02,136 - INFO - Run 0, Sample 12: Images captured and logged.
+2025-03-07 18:07:02,136 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:07:20,697 - INFO - Run 0, Sample 13: Capture signal received.
+2025-03-07 18:07:20,716 - INFO - Run 0, Sample 13: Saved image sample_13_20250307_180720_0000_0.tif
+2025-03-07 18:07:20,723 - INFO - Run 0, Sample 13: Saved image sample_13_20250307_180720_0000_1.tif
+2025-03-07 18:07:20,732 - INFO - Run 0, Sample 13: Images captured and logged.
+2025-03-07 18:07:20,733 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:07:39,281 - INFO - Run 0, Sample 14: Capture signal received.
+2025-03-07 18:07:39,303 - INFO - Run 0, Sample 14: Saved image sample_14_20250307_180739_0000_0.tif
+2025-03-07 18:07:39,306 - INFO - Run 0, Sample 14: Saved image sample_14_20250307_180739_0000_1.tif
+2025-03-07 18:07:39,328 - INFO - Run 0, Sample 14: Images captured and logged.
+2025-03-07 18:07:39,329 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:07:57,885 - INFO - Run 0, Sample 15: Capture signal received.
+2025-03-07 18:07:57,910 - INFO - Run 0, Sample 15: Saved image sample_15_20250307_180757_0000_0.tif
+2025-03-07 18:07:57,921 - INFO - Run 0, Sample 15: Saved image sample_15_20250307_180757_0000_1.tif
+2025-03-07 18:07:57,932 - INFO - Run 0, Sample 15: Images captured and logged.
+2025-03-07 18:07:57,933 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:08:11,660 - INFO - Run 0: Robot signaled run completion.
+2025-03-07 18:08:11,661 - INFO - Run 0 completed with 16 captures.
+2025-03-07 18:08:11,663 - INFO - Entering break period of 6 minutes.
+2025-03-07 18:08:11,663 - INFO - Closing cameras and resetting run pin.
+2025-03-07 18:08:11,698 - INFO - All cameras closed.
+2025-03-07 18:08:11,698 - INFO - Break will end at 2025-03-07 18:08:47
+2025-03-07 18:08:11,702 - INFO - Press Ctrl+C to exit the experiment during the break.
+2025-03-07 18:08:17,738 - INFO - Remaining break time (29.70 seconds) is below the reinitialization threshold of 30 seconds. Reinitializing cameras now.
+2025-03-07 18:08:17,738 - INFO - Re-initializing cameras after break.
+2025-03-07 18:08:18,383 - INFO - All cameras initialized, opened, and default settings applied.
+2025-03-07 18:08:18,384 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 18:08:18,384 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 18:08:18,388 - INFO - Continuous auto-exposure re-enabled.
+2025-03-07 18:08:18,407 - INFO - All cameras started grabbing.
+2025-03-07 18:08:18,407 - INFO - Cameras re-initialized and started grabbing.
+2025-03-07 18:08:47,566 - INFO - Break time has ended. Proceeding to the next run.
+
+2025-03-07 18:08:47,566 - INFO - Starting run 1
+2025-03-07 18:08:47,566 - INFO - Run 1: Signaling robot to start the run.
+2025-03-07 18:09:18,972 - INFO - Run 1, Sample 0: Capture signal received.
+2025-03-07 18:09:19,022 - INFO - Run 1, Sample 0: Saved image sample_0_20250307_180918_0001_0.tif
+2025-03-07 18:09:19,055 - INFO - Run 1, Sample 0: Saved image sample_0_20250307_180918_0001_1.tif
+2025-03-07 18:09:19,083 - INFO - Run 1, Sample 0: Images captured and logged.
+2025-03-07 18:09:19,083 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:09:37,644 - INFO - Run 1, Sample 1: Capture signal received.
+2025-03-07 18:09:37,680 - INFO - Run 1, Sample 1: Saved image sample_1_20250307_180937_0001_0.tif
+2025-03-07 18:09:37,697 - INFO - Run 1, Sample 1: Saved image sample_1_20250307_180937_0001_1.tif
+2025-03-07 18:09:37,700 - INFO - Run 1, Sample 1: Images captured and logged.
+2025-03-07 18:09:37,700 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:09:56,263 - INFO - Run 1, Sample 2: Capture signal received.
+2025-03-07 18:09:56,285 - INFO - Run 1, Sample 2: Saved image sample_2_20250307_180956_0001_0.tif
+2025-03-07 18:09:56,292 - INFO - Run 1, Sample 2: Saved image sample_2_20250307_180956_0001_1.tif
+2025-03-07 18:09:56,295 - INFO - Run 1, Sample 2: Images captured and logged.
+2025-03-07 18:09:56,295 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:10:14,855 - INFO - Run 1, Sample 3: Capture signal received.
+2025-03-07 18:10:14,868 - INFO - Run 1, Sample 3: Saved image sample_3_20250307_181014_0001_0.tif
+2025-03-07 18:10:14,875 - INFO - Run 1, Sample 3: Saved image sample_3_20250307_181014_0001_1.tif
+2025-03-07 18:10:14,886 - INFO - Run 1, Sample 3: Images captured and logged.
+2025-03-07 18:10:14,886 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:10:33,471 - INFO - Run 1, Sample 4: Capture signal received.
+2025-03-07 18:10:33,498 - INFO - Run 1, Sample 4: Saved image sample_4_20250307_181033_0001_0.tif
+2025-03-07 18:10:33,506 - INFO - Run 1, Sample 4: Saved image sample_4_20250307_181033_0001_1.tif
+2025-03-07 18:10:33,512 - INFO - Run 1, Sample 4: Images captured and logged.
+2025-03-07 18:10:33,512 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:10:52,092 - INFO - Run 1, Sample 5: Capture signal received.
+2025-03-07 18:10:52,102 - INFO - Run 1, Sample 5: Saved image sample_5_20250307_181052_0001_0.tif
+2025-03-07 18:10:52,111 - INFO - Run 1, Sample 5: Saved image sample_5_20250307_181052_0001_1.tif
+2025-03-07 18:10:52,121 - INFO - Run 1, Sample 5: Images captured and logged.
+2025-03-07 18:10:52,121 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:11:10,679 - INFO - Run 1, Sample 6: Capture signal received.
+2025-03-07 18:11:10,699 - INFO - Run 1, Sample 6: Saved image sample_6_20250307_181110_0001_0.tif
+2025-03-07 18:11:10,699 - INFO - Run 1, Sample 6: Saved image sample_6_20250307_181110_0001_1.tif
+2025-03-07 18:11:10,719 - INFO - Run 1, Sample 6: Images captured and logged.
+2025-03-07 18:11:10,719 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:11:29,276 - INFO - Run 1, Sample 7: Capture signal received.
+2025-03-07 18:11:29,296 - INFO - Run 1, Sample 7: Saved image sample_7_20250307_181129_0001_0.tif
+2025-03-07 18:11:29,306 - INFO - Run 1, Sample 7: Saved image sample_7_20250307_181129_0001_1.tif
+2025-03-07 18:11:29,316 - INFO - Run 1, Sample 7: Images captured and logged.
+2025-03-07 18:11:29,316 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:11:47,874 - INFO - Run 1, Sample 8: Capture signal received.
+2025-03-07 18:11:47,905 - INFO - Run 1, Sample 8: Saved image sample_8_20250307_181147_0001_0.tif
+2025-03-07 18:11:47,925 - INFO - Run 1, Sample 8: Saved image sample_8_20250307_181147_0001_1.tif
+2025-03-07 18:11:47,931 - INFO - Run 1, Sample 8: Images captured and logged.
+2025-03-07 18:11:47,931 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:12:06,480 - INFO - Run 1, Sample 9: Capture signal received.
+2025-03-07 18:12:06,495 - INFO - Run 1, Sample 9: Saved image sample_9_20250307_181206_0001_0.tif
+2025-03-07 18:12:06,525 - INFO - Run 1, Sample 9: Saved image sample_9_20250307_181206_0001_1.tif
+2025-03-07 18:12:06,538 - INFO - Run 1, Sample 9: Images captured and logged.
+2025-03-07 18:12:06,538 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:12:25,091 - INFO - Run 1, Sample 10: Capture signal received.
+2025-03-07 18:12:25,111 - INFO - Run 1, Sample 10: Saved image sample_10_20250307_181225_0001_0.tif
+2025-03-07 18:12:25,121 - INFO - Run 1, Sample 10: Saved image sample_10_20250307_181225_0001_1.tif
+2025-03-07 18:12:25,131 - INFO - Run 1, Sample 10: Images captured and logged.
+2025-03-07 18:12:25,131 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:12:43,680 - INFO - Run 1, Sample 11: Capture signal received.
+2025-03-07 18:12:43,701 - INFO - Run 1, Sample 11: Saved image sample_11_20250307_181243_0001_0.tif
+2025-03-07 18:12:43,713 - INFO - Run 1, Sample 11: Saved image sample_11_20250307_181243_0001_1.tif
+2025-03-07 18:12:43,722 - INFO - Run 1, Sample 11: Images captured and logged.
+2025-03-07 18:12:43,722 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:13:02,295 - INFO - Run 1, Sample 12: Capture signal received.
+2025-03-07 18:13:02,318 - INFO - Run 1, Sample 12: Saved image sample_12_20250307_181302_0001_0.tif
+2025-03-07 18:13:02,326 - INFO - Run 1, Sample 12: Saved image sample_12_20250307_181302_0001_1.tif
+2025-03-07 18:13:02,337 - INFO - Run 1, Sample 12: Images captured and logged.
+2025-03-07 18:13:02,337 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:13:20,915 - INFO - Run 1, Sample 13: Capture signal received.
+2025-03-07 18:13:20,928 - INFO - Run 1, Sample 13: Saved image sample_13_20250307_181320_0001_0.tif
+2025-03-07 18:13:20,936 - INFO - Run 1, Sample 13: Saved image sample_13_20250307_181320_0001_1.tif
+2025-03-07 18:13:20,945 - INFO - Run 1, Sample 13: Images captured and logged.
+2025-03-07 18:13:20,945 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:13:39,516 - INFO - Run 1, Sample 14: Capture signal received.
+2025-03-07 18:13:39,526 - INFO - Run 1, Sample 14: Saved image sample_14_20250307_181339_0001_0.tif
+2025-03-07 18:13:39,533 - INFO - Run 1, Sample 14: Saved image sample_14_20250307_181339_0001_1.tif
+2025-03-07 18:13:39,546 - INFO - Run 1, Sample 14: Images captured and logged.
+2025-03-07 18:13:39,547 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:13:58,104 - INFO - Run 1, Sample 15: Capture signal received.
+2025-03-07 18:13:58,115 - INFO - Run 1, Sample 15: Saved image sample_15_20250307_181358_0001_0.tif
+2025-03-07 18:13:58,123 - INFO - Run 1, Sample 15: Saved image sample_15_20250307_181358_0001_1.tif
+2025-03-07 18:13:58,132 - INFO - Run 1, Sample 15: Images captured and logged.
+2025-03-07 18:13:58,132 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:14:11,865 - INFO - Run 1: Robot signaled run completion.
+2025-03-07 18:14:11,865 - INFO - Run 1 completed with 16 captures.
+2025-03-07 18:14:11,865 - INFO - Entering break period of 6 minutes.
+2025-03-07 18:14:11,865 - INFO - Closing cameras and resetting run pin.
+2025-03-07 18:14:11,915 - INFO - All cameras closed.
+2025-03-07 18:14:11,915 - INFO - Break will end at 2025-03-07 18:14:47
+2025-03-07 18:14:11,915 - INFO - Press Ctrl+C to exit the experiment during the break.
+2025-03-07 18:14:17,958 - INFO - Remaining break time (29.61 seconds) is below the reinitialization threshold of 30 seconds. Reinitializing cameras now.
+2025-03-07 18:14:17,959 - INFO - Re-initializing cameras after break.
+2025-03-07 18:14:18,659 - INFO - All cameras initialized, opened, and default settings applied.
+2025-03-07 18:14:18,659 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 18:14:18,663 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 18:14:18,663 - INFO - Continuous auto-exposure re-enabled.
+2025-03-07 18:14:18,688 - INFO - All cameras started grabbing.
+2025-03-07 18:14:18,688 - INFO - Cameras re-initialized and started grabbing.
+2025-03-07 18:14:47,851 - INFO - Break time has ended. Proceeding to the next run.
+
+2025-03-07 18:14:47,851 - INFO - Starting run 2
+2025-03-07 18:14:47,851 - INFO - Run 2: Signaling robot to start the run.
+2025-03-07 18:15:19,253 - INFO - Run 2, Sample 0: Capture signal received.
+2025-03-07 18:15:19,269 - INFO - Run 2, Sample 0: Saved image sample_0_20250307_181519_0002_0.tif
+2025-03-07 18:15:19,276 - INFO - Run 2, Sample 0: Saved image sample_0_20250307_181519_0002_1.tif
+2025-03-07 18:15:19,299 - INFO - Run 2, Sample 0: Images captured and logged.
+2025-03-07 18:15:19,299 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:15:37,863 - INFO - Run 2, Sample 1: Capture signal received.
+2025-03-07 18:15:37,873 - INFO - Run 2, Sample 1: Saved image sample_1_20250307_181537_0002_0.tif
+2025-03-07 18:15:37,873 - INFO - Run 2, Sample 1: Saved image sample_1_20250307_181537_0002_1.tif
+2025-03-07 18:15:37,893 - INFO - Run 2, Sample 1: Images captured and logged.
+2025-03-07 18:15:37,893 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:15:56,464 - INFO - Run 2, Sample 2: Capture signal received.
+2025-03-07 18:15:56,469 - INFO - Run 2, Sample 2: Saved image sample_2_20250307_181556_0002_0.tif
+2025-03-07 18:15:56,476 - INFO - Run 2, Sample 2: Saved image sample_2_20250307_181556_0002_1.tif
+2025-03-07 18:15:56,485 - INFO - Run 2, Sample 2: Images captured and logged.
+2025-03-07 18:15:56,485 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:16:15,048 - INFO - Run 2, Sample 3: Capture signal received.
+2025-03-07 18:16:15,068 - INFO - Run 2, Sample 3: Saved image sample_3_20250307_181615_0002_0.tif
+2025-03-07 18:16:15,079 - INFO - Run 2, Sample 3: Saved image sample_3_20250307_181615_0002_1.tif
+2025-03-07 18:16:15,089 - INFO - Run 2, Sample 3: Images captured and logged.
+2025-03-07 18:16:15,089 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:16:33,660 - INFO - Run 2, Sample 4: Capture signal received.
+2025-03-07 18:16:33,681 - INFO - Run 2, Sample 4: Saved image sample_4_20250307_181633_0002_0.tif
+2025-03-07 18:16:33,685 - INFO - Run 2, Sample 4: Saved image sample_4_20250307_181633_0002_1.tif
+2025-03-07 18:16:33,701 - INFO - Run 2, Sample 4: Images captured and logged.
+2025-03-07 18:16:33,701 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:16:52,257 - INFO - Run 2, Sample 5: Capture signal received.
+2025-03-07 18:16:52,273 - INFO - Run 2, Sample 5: Saved image sample_5_20250307_181652_0002_0.tif
+2025-03-07 18:16:52,279 - INFO - Run 2, Sample 5: Saved image sample_5_20250307_181652_0002_1.tif
+2025-03-07 18:16:52,290 - INFO - Run 2, Sample 5: Images captured and logged.
+2025-03-07 18:16:52,290 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:17:10,851 - INFO - Run 2, Sample 6: Capture signal received.
+2025-03-07 18:17:10,868 - INFO - Run 2, Sample 6: Saved image sample_6_20250307_181710_0002_0.tif
+2025-03-07 18:17:10,875 - INFO - Run 2, Sample 6: Saved image sample_6_20250307_181710_0002_1.tif
+2025-03-07 18:17:10,882 - INFO - Run 2, Sample 6: Images captured and logged.
+2025-03-07 18:17:10,882 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:17:29,449 - INFO - Run 2, Sample 7: Capture signal received.
+2025-03-07 18:17:29,465 - INFO - Run 2, Sample 7: Saved image sample_7_20250307_181729_0002_0.tif
+2025-03-07 18:17:29,471 - INFO - Run 2, Sample 7: Saved image sample_7_20250307_181729_0002_1.tif
+2025-03-07 18:17:29,481 - INFO - Run 2, Sample 7: Images captured and logged.
+2025-03-07 18:17:29,481 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:17:48,032 - INFO - Run 2, Sample 8: Capture signal received.
+2025-03-07 18:17:48,053 - INFO - Run 2, Sample 8: Saved image sample_8_20250307_181748_0002_0.tif
+2025-03-07 18:17:48,063 - INFO - Run 2, Sample 8: Saved image sample_8_20250307_181748_0002_1.tif
+2025-03-07 18:17:48,073 - INFO - Run 2, Sample 8: Images captured and logged.
+2025-03-07 18:17:48,073 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:18:06,644 - INFO - Run 2, Sample 9: Capture signal received.
+2025-03-07 18:18:06,669 - INFO - Run 2, Sample 9: Saved image sample_9_20250307_181806_0002_0.tif
+2025-03-07 18:18:06,678 - INFO - Run 2, Sample 9: Saved image sample_9_20250307_181806_0002_1.tif
+2025-03-07 18:18:06,685 - INFO - Run 2, Sample 9: Images captured and logged.
+2025-03-07 18:18:06,686 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:18:25,272 - INFO - Run 2, Sample 10: Capture signal received.
+2025-03-07 18:18:25,281 - INFO - Run 2, Sample 10: Saved image sample_10_20250307_181825_0002_0.tif
+2025-03-07 18:18:25,287 - INFO - Run 2, Sample 10: Saved image sample_10_20250307_181825_0002_1.tif
+2025-03-07 18:18:25,303 - INFO - Run 2, Sample 10: Images captured and logged.
+2025-03-07 18:18:25,303 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:18:43,872 - INFO - Run 2, Sample 11: Capture signal received.
+2025-03-07 18:18:43,898 - INFO - Run 2, Sample 11: Saved image sample_11_20250307_181843_0002_0.tif
+2025-03-07 18:18:43,912 - INFO - Run 2, Sample 11: Saved image sample_11_20250307_181843_0002_1.tif
+2025-03-07 18:18:43,921 - INFO - Run 2, Sample 11: Images captured and logged.
+2025-03-07 18:18:43,921 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:19:02,482 - INFO - Run 2, Sample 12: Capture signal received.
+2025-03-07 18:19:02,501 - INFO - Run 2, Sample 12: Saved image sample_12_20250307_181902_0002_0.tif
+2025-03-07 18:19:02,510 - INFO - Run 2, Sample 12: Saved image sample_12_20250307_181902_0002_1.tif
+2025-03-07 18:19:02,520 - INFO - Run 2, Sample 12: Images captured and logged.
+2025-03-07 18:19:02,520 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:19:21,083 - INFO - Run 2, Sample 13: Capture signal received.
+2025-03-07 18:19:21,099 - INFO - Run 2, Sample 13: Saved image sample_13_20250307_181921_0002_0.tif
+2025-03-07 18:19:21,107 - INFO - Run 2, Sample 13: Saved image sample_13_20250307_181921_0002_1.tif
+2025-03-07 18:19:21,114 - INFO - Run 2, Sample 13: Images captured and logged.
+2025-03-07 18:19:21,115 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:19:39,683 - INFO - Run 2, Sample 14: Capture signal received.
+2025-03-07 18:19:39,694 - INFO - Run 2, Sample 14: Saved image sample_14_20250307_181939_0002_0.tif
+2025-03-07 18:19:39,708 - INFO - Run 2, Sample 14: Saved image sample_14_20250307_181939_0002_1.tif
+2025-03-07 18:19:39,718 - INFO - Run 2, Sample 14: Images captured and logged.
+2025-03-07 18:19:39,718 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:19:58,291 - INFO - Run 2, Sample 15: Capture signal received.
+2025-03-07 18:19:58,312 - INFO - Run 2, Sample 15: Saved image sample_15_20250307_181958_0002_0.tif
+2025-03-07 18:19:58,331 - INFO - Run 2, Sample 15: Saved image sample_15_20250307_181958_0002_1.tif
+2025-03-07 18:19:58,338 - INFO - Run 2, Sample 15: Images captured and logged.
+2025-03-07 18:19:58,339 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:20:12,044 - INFO - Run 2: Robot signaled run completion.
+2025-03-07 18:20:12,044 - INFO - Run 2 completed with 16 captures.
+2025-03-07 18:20:12,044 - INFO - Entering break period of 6 minutes.
+2025-03-07 18:20:12,044 - INFO - Closing cameras and resetting run pin.
+2025-03-07 18:20:12,102 - INFO - All cameras closed.
+2025-03-07 18:20:12,103 - INFO - Break will end at 2025-03-07 18:20:47
+2025-03-07 18:20:12,103 - INFO - Press Ctrl+C to exit the experiment during the break.
+2025-03-07 18:20:18,141 - INFO - Remaining break time (29.71 seconds) is below the reinitialization threshold of 30 seconds. Reinitializing cameras now.
+2025-03-07 18:20:18,141 - INFO - Re-initializing cameras after break.
+2025-03-07 18:20:18,810 - INFO - All cameras initialized, opened, and default settings applied.
+2025-03-07 18:20:18,810 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 18:20:18,810 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 18:20:18,810 - INFO - Continuous auto-exposure re-enabled.
+2025-03-07 18:20:18,832 - INFO - All cameras started grabbing.
+2025-03-07 18:20:18,832 - INFO - Cameras re-initialized and started grabbing.
+2025-03-07 18:20:47,965 - INFO - Break time has ended. Proceeding to the next run.
+
+2025-03-07 18:20:47,965 - INFO - Starting run 3
+2025-03-07 18:20:47,965 - INFO - Run 3: Signaling robot to start the run.
+2025-03-07 18:21:19,387 - INFO - Run 3, Sample 0: Capture signal received.
+2025-03-07 18:21:19,398 - INFO - Run 3, Sample 0: Saved image sample_0_20250307_182119_0003_0.tif
+2025-03-07 18:21:19,408 - INFO - Run 3, Sample 0: Saved image sample_0_20250307_182119_0003_1.tif
+2025-03-07 18:21:19,440 - INFO - Run 3, Sample 0: Images captured and logged.
+2025-03-07 18:21:19,440 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:21:38,003 - INFO - Run 3, Sample 1: Capture signal received.
+2025-03-07 18:21:38,024 - INFO - Run 3, Sample 1: Saved image sample_1_20250307_182138_0003_0.tif
+2025-03-07 18:21:38,034 - INFO - Run 3, Sample 1: Saved image sample_1_20250307_182138_0003_1.tif
+2025-03-07 18:21:38,044 - INFO - Run 3, Sample 1: Images captured and logged.
+2025-03-07 18:21:38,044 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:21:56,608 - INFO - Run 3, Sample 2: Capture signal received.
+2025-03-07 18:21:56,618 - INFO - Run 3, Sample 2: Saved image sample_2_20250307_182156_0003_0.tif
+2025-03-07 18:21:56,628 - INFO - Run 3, Sample 2: Saved image sample_2_20250307_182156_0003_1.tif
+2025-03-07 18:21:56,639 - INFO - Run 3, Sample 2: Images captured and logged.
+2025-03-07 18:21:56,639 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:22:15,209 - INFO - Run 3, Sample 3: Capture signal received.
+2025-03-07 18:22:15,229 - INFO - Run 3, Sample 3: Saved image sample_3_20250307_182215_0003_0.tif
+2025-03-07 18:22:15,233 - INFO - Run 3, Sample 3: Saved image sample_3_20250307_182215_0003_1.tif
+2025-03-07 18:22:15,252 - INFO - Run 3, Sample 3: Images captured and logged.
+2025-03-07 18:22:15,252 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:22:33,827 - INFO - Run 3, Sample 4: Capture signal received.
+2025-03-07 18:22:33,845 - INFO - Run 3, Sample 4: Saved image sample_4_20250307_182233_0003_0.tif
+2025-03-07 18:22:33,857 - INFO - Run 3, Sample 4: Saved image sample_4_20250307_182233_0003_1.tif
+2025-03-07 18:22:33,868 - INFO - Run 3, Sample 4: Images captured and logged.
+2025-03-07 18:22:33,869 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:22:52,430 - INFO - Run 3, Sample 5: Capture signal received.
+2025-03-07 18:22:52,440 - INFO - Run 3, Sample 5: Saved image sample_5_20250307_182252_0003_0.tif
+2025-03-07 18:22:52,450 - INFO - Run 3, Sample 5: Saved image sample_5_20250307_182252_0003_1.tif
+2025-03-07 18:22:52,460 - INFO - Run 3, Sample 5: Images captured and logged.
+2025-03-07 18:22:52,460 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:23:11,015 - INFO - Run 3, Sample 6: Capture signal received.
+2025-03-07 18:23:11,035 - INFO - Run 3, Sample 6: Saved image sample_6_20250307_182311_0003_0.tif
+2025-03-07 18:23:11,041 - INFO - Run 3, Sample 6: Saved image sample_6_20250307_182311_0003_1.tif
+2025-03-07 18:23:11,055 - INFO - Run 3, Sample 6: Images captured and logged.
+2025-03-07 18:23:11,055 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:23:29,619 - INFO - Run 3, Sample 7: Capture signal received.
+2025-03-07 18:23:29,639 - INFO - Run 3, Sample 7: Saved image sample_7_20250307_182329_0003_0.tif
+2025-03-07 18:23:29,649 - INFO - Run 3, Sample 7: Saved image sample_7_20250307_182329_0003_1.tif
+2025-03-07 18:23:29,660 - INFO - Run 3, Sample 7: Images captured and logged.
+2025-03-07 18:23:29,660 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:23:48,214 - INFO - Run 3, Sample 8: Capture signal received.
+2025-03-07 18:23:48,224 - INFO - Run 3, Sample 8: Saved image sample_8_20250307_182348_0003_0.tif
+2025-03-07 18:23:48,238 - INFO - Run 3, Sample 8: Saved image sample_8_20250307_182348_0003_1.tif
+2025-03-07 18:23:48,245 - INFO - Run 3, Sample 8: Images captured and logged.
+2025-03-07 18:23:48,245 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:24:06,809 - INFO - Run 3, Sample 9: Capture signal received.
+2025-03-07 18:24:06,832 - INFO - Run 3, Sample 9: Saved image sample_9_20250307_182406_0003_0.tif
+2025-03-07 18:24:06,841 - INFO - Run 3, Sample 9: Saved image sample_9_20250307_182406_0003_1.tif
+2025-03-07 18:24:06,861 - INFO - Run 3, Sample 9: Images captured and logged.
+2025-03-07 18:24:06,861 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:24:25,422 - INFO - Run 3, Sample 10: Capture signal received.
+2025-03-07 18:24:25,442 - INFO - Run 3, Sample 10: Saved image sample_10_20250307_182425_0003_0.tif
+2025-03-07 18:24:25,452 - INFO - Run 3, Sample 10: Saved image sample_10_20250307_182425_0003_1.tif
+2025-03-07 18:24:25,463 - INFO - Run 3, Sample 10: Images captured and logged.
+2025-03-07 18:24:25,463 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:24:44,024 - INFO - Run 3, Sample 11: Capture signal received.
+2025-03-07 18:24:44,045 - INFO - Run 3, Sample 11: Saved image sample_11_20250307_182444_0003_0.tif
+2025-03-07 18:24:44,045 - INFO - Run 3, Sample 11: Saved image sample_11_20250307_182444_0003_1.tif
+2025-03-07 18:24:44,065 - INFO - Run 3, Sample 11: Images captured and logged.
+2025-03-07 18:24:44,065 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:25:02,640 - INFO - Run 3, Sample 12: Capture signal received.
+2025-03-07 18:25:02,660 - INFO - Run 3, Sample 12: Saved image sample_12_20250307_182502_0003_0.tif
+2025-03-07 18:25:02,660 - INFO - Run 3, Sample 12: Saved image sample_12_20250307_182502_0003_1.tif
+2025-03-07 18:25:02,670 - INFO - Run 3, Sample 12: Images captured and logged.
+2025-03-07 18:25:02,670 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:25:21,230 - INFO - Run 3, Sample 13: Capture signal received.
+2025-03-07 18:25:21,300 - INFO - Run 3, Sample 13: Saved image sample_13_20250307_182521_0003_0.tif
+2025-03-07 18:25:21,341 - INFO - Run 3, Sample 13: Saved image sample_13_20250307_182521_0003_1.tif
+2025-03-07 18:25:21,361 - INFO - Run 3, Sample 13: Images captured and logged.
+2025-03-07 18:25:21,361 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:25:39,929 - INFO - Run 3, Sample 14: Capture signal received.
+2025-03-07 18:25:39,950 - INFO - Run 3, Sample 14: Saved image sample_14_20250307_182539_0003_0.tif
+2025-03-07 18:25:39,962 - INFO - Run 3, Sample 14: Saved image sample_14_20250307_182539_0003_1.tif
+2025-03-07 18:25:39,970 - INFO - Run 3, Sample 14: Images captured and logged.
+2025-03-07 18:25:39,970 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:25:58,537 - INFO - Run 3, Sample 15: Capture signal received.
+2025-03-07 18:25:58,551 - INFO - Run 3, Sample 15: Saved image sample_15_20250307_182558_0003_0.tif
+2025-03-07 18:25:58,558 - INFO - Run 3, Sample 15: Saved image sample_15_20250307_182558_0003_1.tif
+2025-03-07 18:25:58,558 - INFO - Run 3, Sample 15: Images captured and logged.
+2025-03-07 18:25:58,558 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:26:12,279 - INFO - Run 3: Robot signaled run completion.
+2025-03-07 18:26:12,279 - INFO - Run 3 completed with 16 captures.
+2025-03-07 18:26:12,279 - INFO - Entering break period of 6 minutes.
+2025-03-07 18:26:12,279 - INFO - Closing cameras and resetting run pin.
+2025-03-07 18:26:12,319 - INFO - All cameras closed.
+2025-03-07 18:26:12,319 - INFO - Break will end at 2025-03-07 18:26:47
+2025-03-07 18:26:12,327 - INFO - Press Ctrl+C to exit the experiment during the break.
+2025-03-07 18:26:18,354 - INFO - Remaining break time (29.61 seconds) is below the reinitialization threshold of 30 seconds. Reinitializing cameras now.
+2025-03-07 18:26:18,354 - INFO - Re-initializing cameras after break.
+2025-03-07 18:26:19,047 - INFO - All cameras initialized, opened, and default settings applied.
+2025-03-07 18:26:19,047 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 18:26:19,047 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 18:26:19,052 - INFO - Continuous auto-exposure re-enabled.
+2025-03-07 18:26:19,071 - INFO - All cameras started grabbing.
+2025-03-07 18:26:19,071 - INFO - Cameras re-initialized and started grabbing.
+2025-03-07 18:26:48,222 - INFO - Break time has ended. Proceeding to the next run.
+
+2025-03-07 18:26:48,223 - INFO - Starting run 4
+2025-03-07 18:26:48,224 - INFO - Run 4: Signaling robot to start the run.
+2025-03-07 18:27:19,638 - INFO - Run 4, Sample 0: Capture signal received.
+2025-03-07 18:27:19,648 - INFO - Run 4, Sample 0: Saved image sample_0_20250307_182719_0004_0.tif
+2025-03-07 18:27:19,657 - INFO - Run 4, Sample 0: Saved image sample_0_20250307_182719_0004_1.tif
+2025-03-07 18:27:19,692 - INFO - Run 4, Sample 0: Images captured and logged.
+2025-03-07 18:27:19,692 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:27:38,264 - INFO - Run 4, Sample 1: Capture signal received.
+2025-03-07 18:27:38,277 - INFO - Run 4, Sample 1: Saved image sample_1_20250307_182738_0004_0.tif
+2025-03-07 18:27:38,285 - INFO - Run 4, Sample 1: Saved image sample_1_20250307_182738_0004_1.tif
+2025-03-07 18:27:38,295 - INFO - Run 4, Sample 1: Images captured and logged.
+2025-03-07 18:27:38,295 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:27:56,869 - INFO - Run 4, Sample 2: Capture signal received.
+2025-03-07 18:27:56,889 - INFO - Run 4, Sample 2: Saved image sample_2_20250307_182756_0004_0.tif
+2025-03-07 18:27:56,894 - INFO - Run 4, Sample 2: Saved image sample_2_20250307_182756_0004_1.tif
+2025-03-07 18:27:56,914 - INFO - Run 4, Sample 2: Images captured and logged.
+2025-03-07 18:27:56,915 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:28:15,483 - INFO - Run 4, Sample 3: Capture signal received.
+2025-03-07 18:28:15,497 - INFO - Run 4, Sample 3: Saved image sample_3_20250307_182815_0004_0.tif
+2025-03-07 18:28:15,505 - INFO - Run 4, Sample 3: Saved image sample_3_20250307_182815_0004_1.tif
+2025-03-07 18:28:15,514 - INFO - Run 4, Sample 3: Images captured and logged.
+2025-03-07 18:28:15,514 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:28:34,094 - INFO - Run 4, Sample 4: Capture signal received.
+2025-03-07 18:28:34,119 - INFO - Run 4, Sample 4: Saved image sample_4_20250307_182834_0004_0.tif
+2025-03-07 18:28:34,126 - INFO - Run 4, Sample 4: Saved image sample_4_20250307_182834_0004_1.tif
+2025-03-07 18:28:34,135 - INFO - Run 4, Sample 4: Images captured and logged.
+2025-03-07 18:28:34,135 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:28:52,698 - INFO - Run 4, Sample 5: Capture signal received.
+2025-03-07 18:28:52,729 - INFO - Run 4, Sample 5: Saved image sample_5_20250307_182852_0004_0.tif
+2025-03-07 18:28:52,738 - INFO - Run 4, Sample 5: Saved image sample_5_20250307_182852_0004_1.tif
+2025-03-07 18:28:52,748 - INFO - Run 4, Sample 5: Images captured and logged.
+2025-03-07 18:28:52,748 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:29:11,321 - INFO - Run 4, Sample 6: Capture signal received.
+2025-03-07 18:29:11,331 - INFO - Run 4, Sample 6: Saved image sample_6_20250307_182911_0004_0.tif
+2025-03-07 18:29:11,331 - INFO - Run 4, Sample 6: Saved image sample_6_20250307_182911_0004_1.tif
+2025-03-07 18:29:11,351 - INFO - Run 4, Sample 6: Images captured and logged.
+2025-03-07 18:29:11,351 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:29:29,921 - INFO - Run 4, Sample 7: Capture signal received.
+2025-03-07 18:29:29,941 - INFO - Run 4, Sample 7: Saved image sample_7_20250307_182929_0004_0.tif
+2025-03-07 18:29:29,957 - INFO - Run 4, Sample 7: Saved image sample_7_20250307_182929_0004_1.tif
+2025-03-07 18:29:29,972 - INFO - Run 4, Sample 7: Images captured and logged.
+2025-03-07 18:29:29,972 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:29:48,529 - INFO - Run 4, Sample 8: Capture signal received.
+2025-03-07 18:29:48,550 - INFO - Run 4, Sample 8: Saved image sample_8_20250307_182948_0004_0.tif
+2025-03-07 18:29:48,560 - INFO - Run 4, Sample 8: Saved image sample_8_20250307_182948_0004_1.tif
+2025-03-07 18:29:48,569 - INFO - Run 4, Sample 8: Images captured and logged.
+2025-03-07 18:29:48,569 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:30:07,122 - INFO - Run 4, Sample 9: Capture signal received.
+2025-03-07 18:30:07,142 - INFO - Run 4, Sample 9: Saved image sample_9_20250307_183007_0004_0.tif
+2025-03-07 18:30:07,160 - INFO - Run 4, Sample 9: Saved image sample_9_20250307_183007_0004_1.tif
+2025-03-07 18:30:07,162 - INFO - Run 4, Sample 9: Images captured and logged.
+2025-03-07 18:30:07,162 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:30:25,753 - INFO - Run 4, Sample 10: Capture signal received.
+2025-03-07 18:30:25,779 - INFO - Run 4, Sample 10: Saved image sample_10_20250307_183025_0004_0.tif
+2025-03-07 18:30:25,787 - INFO - Run 4, Sample 10: Saved image sample_10_20250307_183025_0004_1.tif
+2025-03-07 18:30:25,793 - INFO - Run 4, Sample 10: Images captured and logged.
+2025-03-07 18:30:25,793 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:30:44,371 - INFO - Run 4, Sample 11: Capture signal received.
+2025-03-07 18:30:44,399 - INFO - Run 4, Sample 11: Saved image sample_11_20250307_183044_0004_0.tif
+2025-03-07 18:30:44,403 - INFO - Run 4, Sample 11: Saved image sample_11_20250307_183044_0004_1.tif
+2025-03-07 18:30:44,411 - INFO - Run 4, Sample 11: Images captured and logged.
+2025-03-07 18:30:44,411 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:31:02,973 - INFO - Run 4, Sample 12: Capture signal received.
+2025-03-07 18:31:02,994 - INFO - Run 4, Sample 12: Saved image sample_12_20250307_183102_0004_0.tif
+2025-03-07 18:31:03,006 - INFO - Run 4, Sample 12: Saved image sample_12_20250307_183102_0004_1.tif
+2025-03-07 18:31:03,006 - INFO - Run 4, Sample 12: Images captured and logged.
+2025-03-07 18:31:03,006 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:31:21,570 - INFO - Run 4, Sample 13: Capture signal received.
+2025-03-07 18:31:21,580 - INFO - Run 4, Sample 13: Saved image sample_13_20250307_183121_0004_0.tif
+2025-03-07 18:31:21,590 - INFO - Run 4, Sample 13: Saved image sample_13_20250307_183121_0004_1.tif
+2025-03-07 18:31:21,600 - INFO - Run 4, Sample 13: Images captured and logged.
+2025-03-07 18:31:21,600 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:31:40,155 - INFO - Run 4, Sample 14: Capture signal received.
+2025-03-07 18:31:40,165 - INFO - Run 4, Sample 14: Saved image sample_14_20250307_183140_0004_0.tif
+2025-03-07 18:31:40,175 - INFO - Run 4, Sample 14: Saved image sample_14_20250307_183140_0004_1.tif
+2025-03-07 18:31:40,195 - INFO - Run 4, Sample 14: Images captured and logged.
+2025-03-07 18:31:40,195 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:31:58,774 - INFO - Run 4, Sample 15: Capture signal received.
+2025-03-07 18:31:58,792 - INFO - Run 4, Sample 15: Saved image sample_15_20250307_183158_0004_0.tif
+2025-03-07 18:31:58,802 - INFO - Run 4, Sample 15: Saved image sample_15_20250307_183158_0004_1.tif
+2025-03-07 18:31:58,814 - INFO - Run 4, Sample 15: Images captured and logged.
+2025-03-07 18:31:58,814 - INFO - Signaling robot that capture is complete.
+2025-03-07 18:32:12,535 - INFO - Run 4: Robot signaled run completion.
+2025-03-07 18:32:12,535 - INFO - Run 4 completed with 16 captures.
+2025-03-07 18:32:12,536 - INFO - Generating PDF report: captured_images\2025-03-07_18-02-32\4x4\2025-03-07_18-02-32_report.pdf
+2025-03-07 18:32:12,558 - INFO - PDF report generated successfully: captured_images\2025-03-07_18-02-32\4x4\2025-03-07_18-02-32_report.pdf
+2025-03-07 18:32:12,559 - INFO - Experiment terminated. PDF report generated.
+2025-03-07 18:32:12,561 - INFO - Connection to Arduino board closed.
+2025-03-07 18:32:12,608 - INFO - All cameras closed.
+2025-03-07 18:32:12,608 - INFO - CSV file closed.
+2025-03-07 18:32:12,609 - INFO - Cleanup complete.
+PS C:\Users\bug61a\Documents\GitHub\MycoRobo3D-DIC> 

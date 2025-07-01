@@ -1,0 +1,152 @@
+PS C:\Users\bug61a\Documents\GitHub\MycoRobo3D-DIC> & C:/Users/bug61a/anaconda3/envs/limc2/python.exe c:/Users/bug61a/Documents/GitHub/MycoRobo3D-DIC/main.py
+2025-03-07 19:41:10,311 - INFO - Configuration loaded from config.json.
+2025-03-07 19:41:10,311 - INFO - Configuration validation successful.
+
+8""8""8                   8"""8                     eeee  8""""8      8""""8 8  8""""8 
+8  8  8 e    e eeee eeeee 8   8  eeeee eeeee  eeeee    8  8    8      8    8 8  8    " 
+8e 8  8 8    8 8  8 8  88 8eee8e 8  88 8   8  8  88    8  8e   8      8e   8 8e 8e     
+88 8  8 8eeee8 8e   8   8 88   8 8   8 8eee8e 8   8 eee8  88   8 eeee 88   8 88 88     
+88 8  8   88   88   8   8 88   8 8   8 88   8 8   8    88 88   8      88   8 88 88   e 
+88 8  8   88   88e8 8eee8 88   8 8eee8 88eee8 8eee8 eee88 88eee8      88eee8 88 88eee8
+
+    MycoRobo3d-DIC: Automated Image Acquisition System
+
+    Author: Özgüç B. Çapunaman
+    Maintainers: Özgüç B. Çapunaman, Alale Mohseni
+    Institution: ForMatLab @ Penn State University
+    Year: 2024
+    Github: https://github.com/ForMat-Lab/MycoRobo3D-DIC
+
+2025-03-07 19:41:10,311 - INFO - Detected Arduino on port: COM3 (VID: 2341, PID: 0043)
+2025-03-07 19:41:15,314 - INFO - Connected to Arduino on port COM3
+2025-03-07 19:41:15,314 - INFO - Arduino input pin set up: DO_RUN_COMPLETE on pin 6
+2025-03-07 19:41:15,314 - INFO - Set up digital input on pin 6.
+2025-03-07 19:41:15,314 - INFO - Arduino input pin set up: DO_CAPTURE on pin 7
+2025-03-07 19:41:15,314 - INFO - Set up digital input on pin 7.
+2025-03-07 19:41:15,314 - INFO - Arduino output pin set up: DI_RUN on pin 2
+2025-03-07 19:41:15,314 - INFO - Set up digital output on pin 2.
+2025-03-07 19:41:15,314 - INFO - Arduino output pin set up: DI_CAPTURE_COMPLETE on pin 3
+2025-03-07 19:41:15,314 - INFO - Set up digital output on pin 3.
+2025-03-07 19:41:16,019 - INFO - All cameras initialized, opened, and default settings applied.
+2025-03-07 19:41:16,019 - INFO - Continuous mode: Auto-exposure enabled continuously.
+2025-03-07 19:41:16,019 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 19:41:16,019 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 19:41:16,042 - INFO - All cameras started grabbing.
+2025-03-07 19:41:16,042 - INFO - Cameras initialized and started grabbing.
+2025-03-07 19:41:16,042 - INFO - Output base folder created at captured_images\2025-03-07_19-41-10\1x1
+2025-03-07 19:41:16,042 - INFO - Sample folder created at captured_images\2025-03-07_19-41-10\1x1\Sample_0
+Type 'start' to begin the experiment or 'quit' to exit: start
+2025-03-07 19:41:20,303 - INFO - Experiment started. Press Ctrl+C anytime to interrupt.
+2025-03-07 19:41:20,304 - INFO - Starting run 0
+2025-03-07 19:41:20,305 - INFO - Run 0: Signaling robot to start the run.
+2025-03-07 19:41:48,234 - INFO - Run 0, Sample 0: Capture signal received.
+2025-03-07 19:41:48,243 - INFO - Run 0, Sample 0: Saved image sample_0_20250307_194148_0000_0.tif
+2025-03-07 19:41:48,249 - INFO - Run 0, Sample 0: Saved image sample_0_20250307_194148_0000_1.tif
+2025-03-07 19:41:48,274 - INFO - Run 0, Sample 0: Images captured and logged.
+2025-03-07 19:41:48,274 - INFO - Signaling robot that capture is complete.
+2025-03-07 19:41:58,828 - INFO - Run 0: Robot signaled run completion.
+2025-03-07 19:41:58,829 - INFO - Run 0 completed with 1 captures.
+2025-03-07 19:41:58,829 - INFO - Entering break period of 1 minutes.
+2025-03-07 19:41:58,829 - INFO - Closing cameras and resetting run pin.
+2025-03-07 19:41:58,876 - INFO - All cameras closed.
+2025-03-07 19:41:58,877 - INFO - Break will end at 2025-03-07 19:42:20
+2025-03-07 19:41:58,877 - INFO - Press Ctrl+C to exit the experiment during the break.
+2025-03-07 19:41:58,877 - INFO - Remaining break time (21.43 seconds) is below the reinitialization threshold of 30 seconds. Reinitializing cameras now.
+2025-03-07 19:41:58,877 - INFO - Re-initializing cameras after break.
+2025-03-07 19:41:59,537 - INFO - All cameras initialized, opened, and default settings applied.
+2025-03-07 19:41:59,541 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 19:41:59,542 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 19:41:59,542 - INFO - Continuous auto-exposure re-enabled.
+2025-03-07 19:41:59,573 - INFO - All cameras started grabbing.
+2025-03-07 19:41:59,574 - INFO - Cameras re-initialized and started grabbing.
+2025-03-07 19:42:20,676 - INFO - Break time has ended. Proceeding to the next run.
+
+2025-03-07 19:42:20,676 - INFO - Starting run 1
+2025-03-07 19:42:20,676 - INFO - Run 1: Signaling robot to start the run.
+2025-03-07 19:42:48,603 - INFO - Run 1, Sample 0: Capture signal received.
+2025-03-07 19:42:48,615 - INFO - Run 1, Sample 0: Saved image sample_0_20250307_194248_0001_0.tif
+2025-03-07 19:42:48,619 - INFO - Run 1, Sample 0: Saved image sample_0_20250307_194248_0001_1.tif
+2025-03-07 19:42:48,656 - INFO - Run 1, Sample 0: Images captured and logged.
+2025-03-07 19:42:48,656 - INFO - Signaling robot that capture is complete.
+2025-03-07 19:42:59,218 - INFO - Run 1: Robot signaled run completion.
+2025-03-07 19:42:59,218 - INFO - Run 1 completed with 1 captures.
+2025-03-07 19:42:59,218 - INFO - Entering break period of 1 minutes.
+2025-03-07 19:42:59,218 - INFO - Closing cameras and resetting run pin.
+2025-03-07 19:42:59,268 - INFO - All cameras closed.
+2025-03-07 19:42:59,278 - INFO - Break will end at 2025-03-07 19:43:20
+2025-03-07 19:42:59,278 - INFO - Press Ctrl+C to exit the experiment during the break.
+2025-03-07 19:42:59,279 - INFO - Remaining break time (21.40 seconds) is below the reinitialization threshold of 30 seconds. Reinitializing cameras now.
+2025-03-07 19:42:59,279 - INFO - Re-initializing cameras after break.
+2025-03-07 19:42:59,923 - INFO - All cameras initialized, opened, and default settings applied.
+2025-03-07 19:42:59,923 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 19:42:59,923 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 19:42:59,933 - INFO - Continuous auto-exposure re-enabled.
+2025-03-07 19:42:59,943 - INFO - All cameras started grabbing.
+2025-03-07 19:42:59,943 - INFO - Cameras re-initialized and started grabbing.
+2025-03-07 19:43:21,017 - INFO - Break time has ended. Proceeding to the next run.
+
+2025-03-07 19:43:21,017 - INFO - Starting run 2
+2025-03-07 19:43:21,017 - INFO - Run 2: Signaling robot to start the run.
+2025-03-07 19:43:48,936 - INFO - Run 2, Sample 0: Capture signal received.
+2025-03-07 19:43:48,976 - INFO - Run 2, Sample 0: Saved image sample_0_20250307_194348_0002_0.tif
+2025-03-07 19:43:48,986 - INFO - Run 2, Sample 0: Saved image sample_0_20250307_194348_0002_1.tif
+2025-03-07 19:43:49,060 - INFO - Run 2, Sample 0: Images captured and logged.
+2025-03-07 19:43:49,061 - INFO - Signaling robot that capture is complete.
+2025-03-07 19:43:59,606 - INFO - Run 2: Robot signaled run completion.
+2025-03-07 19:43:59,606 - INFO - Run 2 completed with 1 captures.
+2025-03-07 19:43:59,606 - INFO - Entering break period of 1 minutes.
+2025-03-07 19:43:59,606 - INFO - Closing cameras and resetting run pin.
+2025-03-07 19:43:59,637 - INFO - All cameras closed.
+2025-03-07 19:43:59,637 - INFO - Break will end at 2025-03-07 19:44:21
+2025-03-07 19:43:59,638 - INFO - Press Ctrl+C to exit the experiment during the break.
+2025-03-07 19:43:59,638 - INFO - Remaining break time (21.38 seconds) is below the reinitialization threshold of 30 seconds. Reinitializing cameras now.
+2025-03-07 19:43:59,638 - INFO - Re-initializing cameras after break.
+2025-03-07 19:44:00,377 - INFO - All cameras initialized, opened, and default settings applied.
+2025-03-07 19:44:00,377 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 19:44:00,377 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 19:44:00,377 - INFO - Continuous auto-exposure re-enabled.
+2025-03-07 19:44:00,407 - INFO - All cameras started grabbing.
+2025-03-07 19:44:00,407 - INFO - Cameras re-initialized and started grabbing.
+2025-03-07 19:44:21,529 - INFO - Break time has ended. Proceeding to the next run.
+
+2025-03-07 19:44:21,529 - INFO - Starting run 3
+2025-03-07 19:44:21,529 - INFO - Run 3: Signaling robot to start the run.
+2025-03-07 19:44:49,438 - INFO - Run 3, Sample 0: Capture signal received.
+2025-03-07 19:44:49,448 - INFO - Run 3, Sample 0: Saved image sample_0_20250307_194449_0003_0.tif
+2025-03-07 19:44:49,458 - INFO - Run 3, Sample 0: Saved image sample_0_20250307_194449_0003_1.tif
+2025-03-07 19:44:49,484 - INFO - Run 3, Sample 0: Images captured and logged.
+2025-03-07 19:44:49,485 - INFO - Signaling robot that capture is complete.
+2025-03-07 19:45:00,035 - INFO - Run 3: Robot signaled run completion.
+2025-03-07 19:45:00,035 - INFO - Run 3 completed with 1 captures.
+2025-03-07 19:45:00,035 - INFO - Entering break period of 1 minutes.
+2025-03-07 19:45:00,035 - INFO - Closing cameras and resetting run pin.
+2025-03-07 19:45:00,065 - INFO - All cameras closed.
+2025-03-07 19:45:00,065 - INFO - Break will end at 2025-03-07 19:45:21
+2025-03-07 19:45:00,065 - INFO - Press Ctrl+C to exit the experiment during the break.
+2025-03-07 19:45:00,065 - INFO - Remaining break time (21.47 seconds) is below the reinitialization threshold of 30 seconds. Reinitializing cameras now.
+2025-03-07 19:45:00,065 - INFO - Re-initializing cameras after break.
+2025-03-07 19:45:00,768 - INFO - All cameras initialized, opened, and default settings applied.
+2025-03-07 19:45:00,769 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 19:45:00,771 - INFO - Auto-exposure 'Continuous' enabled for camera: acA2440-35um
+2025-03-07 19:45:00,771 - INFO - Continuous auto-exposure re-enabled.
+2025-03-07 19:45:00,784 - INFO - All cameras started grabbing.
+2025-03-07 19:45:00,784 - INFO - Cameras re-initialized and started grabbing.
+2025-03-07 19:45:21,893 - INFO - Break time has ended. Proceeding to the next run.
+
+2025-03-07 19:45:21,893 - INFO - Starting run 4
+2025-03-07 19:45:21,895 - INFO - Run 4: Signaling robot to start the run.
+2025-03-07 19:45:49,818 - INFO - Run 4, Sample 0: Capture signal received.
+2025-03-07 19:45:49,845 - INFO - Run 4, Sample 0: Saved image sample_0_20250307_194549_0004_0.tif
+2025-03-07 19:45:49,849 - INFO - Run 4, Sample 0: Saved image sample_0_20250307_194549_0004_1.tif
+2025-03-07 19:45:49,873 - INFO - Run 4, Sample 0: Images captured and logged.
+2025-03-07 19:45:49,873 - INFO - Signaling robot that capture is complete.
+2025-03-07 19:46:00,417 - INFO - Run 4: Robot signaled run completion.
+2025-03-07 19:46:00,419 - INFO - Run 4 completed with 1 captures.
+2025-03-07 19:46:00,419 - INFO - Generating PDF report: captured_images\2025-03-07_19-41-10\1x1\2025-03-07_19-41-10_report.pdf
+2025-03-07 19:46:00,428 - INFO - PDF report generated successfully: captured_images\2025-03-07_19-41-10\1x1\2025-03-07_19-41-10_report.pdf
+2025-03-07 19:46:00,428 - INFO - Experiment terminated. PDF report generated.
+2025-03-07 19:46:00,429 - INFO - Connection to Arduino board closed.
+2025-03-07 19:46:00,469 - INFO - All cameras closed.
+2025-03-07 19:46:00,469 - INFO - CSV file closed.
+2025-03-07 19:46:00,469 - INFO - Cleanup complete.
+PS C:\Users\bug61a\Documents\GitHub\MycoRobo3D-DIC> 
