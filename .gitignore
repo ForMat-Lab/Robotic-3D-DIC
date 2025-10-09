@@ -173,3 +173,4 @@ cython_debug/
 *.npy
 
 *.mod
+/.vscode
