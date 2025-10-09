@@ -4,6 +4,8 @@
 
 **Robotic-3D-DIC** is an automated imaging acquisition system designed for high-throughput studies. It integrates robotic automation with imaging hardware to capture images at predefined sample positions. The system facilitates synchronized movements and image captures between an ABB robot, Basler cameras, and an Arduino microcontroller.
 
+![Graphical Abstract](img/graphical_abstract.png)
+
 ---
 
 ## Table of Contents
@@ -325,4 +327,18 @@ The following table summarizes the signals, their Arduino pin assignments, direc
 
 ---
 
-If you have any questions or need further assistance, please contact the maintainers.
+
+## Citation
+
+Please cite [our work](http://dx.doi.org/10.2139/ssrn.5384450) if you use our codebase in your research.
+
+```bib
+  @article{Capunaman2025,
+  author = {Çapunaman, Özgüç Bertuğ and Mohseni, Alale and Dombrovskij, Dennis and Yin, Kaiyang and Gürsoy, Benay and Mylo, Max D.},
+  title = {A Robotic Framework for High-Throughput and Multi-View 3D Digital Image Correlation (3D-DIC): Increasing Measurement Volume and Versatility for Deformation Analysis},
+  journal = {SSRN Electronic Journal},
+  year = {2025},
+  doi = {10.2139/ssrn.5384450},
+  url = {https://ssrn.com/abstract=5384450}
+}
+```
