@@ -334,11 +334,11 @@ Please cite [our work](http://dx.doi.org/10.2139/ssrn.5384450) if you use our co
 
 ```bib
   @article{Capunaman2025,
-  author = {Çapunaman, Özgüç Bertuğ and Mohseni, Alale and Dombrovskij, Dennis and Yin, Kaiyang and Gürsoy, Benay and Mylo, Max D.},
-  title = {A Robotic Framework for High-Throughput and Multi-View 3D Digital Image Correlation (3D-DIC): Increasing Measurement Volume and Versatility for Deformation Analysis},
-  journal = {SSRN Electronic Journal},
-  year = {2025},
-  doi = {10.2139/ssrn.5384450},
-  url = {https://ssrn.com/abstract=5384450}
+    author = {Çapunaman, Özgüç Bertuğ and Mohseni, Alale and Dombrovskij, Dennis and Yin, Kaiyang and Gürsoy, Benay and Mylo, Max D.},
+    title = {A Robotic Framework for High-Throughput and Multi-View 3D Digital Image Correlation (3D-DIC): Increasing Measurement Volume and Versatility for Deformation Analysis},
+    journal = {SSRN Electronic Journal},
+    year = {2025},
+    doi = {10.2139/ssrn.5384450},
+    url = {https://ssrn.com/abstract=5384450}
 }
 ```
